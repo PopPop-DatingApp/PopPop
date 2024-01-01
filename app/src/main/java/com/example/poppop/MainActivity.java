@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView;
     private Button signInBtn;
     private Button signOutBtn;
-    private int RC_SIGN_IN = 40;
+    private static final int RC_SIGN_IN = 40;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +59,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            textView.setText(currentUser.getDisplayName());
-        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -69,6 +66,20 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    textView.setText("Hello " + user.getDisplayName());
+                } else {
+                    // User is signed out
+                    textView.setText("Sign in to continue");
+                }
+            }
+        });
     }
 
     @Override
@@ -102,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     UserModel userModel = new UserModel();
                     userModel.setUserId(user.getUid());
                     userModel.setName(user.getDisplayName());
-                    userModel.setProfile(user.getPhotoUrl().toString());
+                    userModel.setProfile(user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
 
                     textView.setText("Hello " + user.getDisplayName());
                 }
