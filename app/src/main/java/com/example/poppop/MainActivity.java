@@ -6,8 +6,11 @@ import static com.example.poppop.GoogleTokenFetcher.fetchAccessToken;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,8 +35,13 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -47,21 +55,27 @@ public class MainActivity extends AppCompatActivity {
     private Button signOutBtn;
     private static final int RC_SIGN_IN = 40;
 
+    private String Oauth2Token;
+
     private static final List<String> SCOPES = Arrays.asList("https://www.googleapis.com/auth/cloud-platform");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            getAccessToken();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.textView);
         signInBtn = findViewById(R.id.button);
         signOutBtn = findViewById(R.id.button2);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        try {
+            Oauth2Token = getAccessToken(MainActivity.this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,19 +153,8 @@ public class MainActivity extends AppCompatActivity {
                     userModel.setProfile(user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
 
                     textView.setText("Hello " + user.getDisplayName());
-//                    try {
-//                        String accessTokenResponse = fetchAccessToken(serverAuthCode);
-////                        FCMSender.sendPushToSingleInstance(accessTokenResponse,MainActivity.this,"dkfVuBqJQ2CjcPbUX8b1kO:APA91bE0O48rikT4UMZ-xUk_yxvePV39JNkM1PwKFHhOO-VJt-RvyeC5xvum4_iw6DHqNeyJwP00te5JfN8ug3h9K_f6LsWOg2jAJ02RXUuB3MTvzEkqcoFRDkeVRMvSHGvNe7zVRtwq",
-////                                "Test", "hello");
-//                        Log.e("accessTokenResponse",accessTokenResponse);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                        Log.e("qwerty", e.toString());
-//                    } catch (GeneralSecurityException e) {
-//                        Log.e("qwerty", e.toString());
-//                        throw new RuntimeException(e);
-//                    }
-
+                    FCMSender.sendPushToSingleInstance(Oauth2Token,MainActivity.this,"dkfVuBqJQ2CjcPbUX8b1kO:APA91bE0O48rikT4UMZ-xUk_yxvePV39JNkM1PwKFHhOO-VJt-RvyeC5xvum4_iw6DHqNeyJwP00te5JfN8ug3h9K_f6LsWOg2jAJ02RXUuB3MTvzEkqcoFRDkeVRMvSHGvNe7zVRtwq",
+                            "Test", "hello");
                 }
                 else{
                     Toast.makeText(MainActivity.this, "Fail to sign in", Toast.LENGTH_SHORT).show();
@@ -160,8 +163,52 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private static String getAccessToken() throws IOException {
-        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(new FileInputStream("java/com/example/poppop/assesets/service-account.json")).createScoped(SCOPES);
+    private static String getAccessToken(Context context) throws IOException {
+        String type = context.getResources().getString(R.string.service_account_type);
+        String projectId = context.getResources().getString(R.string.service_account_project_id);
+        String privateKeyId = context.getResources().getString(R.string.service_account_private_key_id);
+        String privateKey = context.getResources().getString(R.string.service_account_private_key);
+        String clientEmail = context.getResources().getString(R.string.service_account_client_email);
+        String clientId = context.getResources().getString(R.string.service_account_client_id);
+        String authUri = context.getResources().getString(R.string.service_account_auth_uri);
+        String tokenUri = context.getResources().getString(R.string.service_account_token_uri);
+        String authProviderX509CertUrl = context.getResources().getString(R.string.service_account_auth_provider_x509_cert_url);
+        String clientX509CertUrl = context.getResources().getString(R.string.service_account_client_x509_cert_url);
+        String universeDomain = context.getResources().getString(R.string.service_account_universe_domain);
+
+        Log.d(TAG, "Type: " + type);
+        Log.d(TAG, "Project ID: " + projectId);
+        Log.d(TAG, "Private Key ID: " + privateKeyId);
+        Log.d(TAG, "Private Key: " + privateKey);
+        Log.d(TAG, "Client Email: " + clientEmail);
+        Log.d(TAG, "Client ID: " + clientId);
+        Log.d(TAG, "Auth URI: " + authUri);
+        Log.d(TAG, "Token URI: " + tokenUri);
+        Log.d(TAG, "Auth Provider X509 Cert URL: " + authProviderX509CertUrl);
+        Log.d(TAG, "Client X509 Cert URL: " + clientX509CertUrl);
+        Log.d(TAG, "Universe Domain: " + universeDomain);
+        // Construct JSON using JSONObject
+        JSONObject serviceAccountJson = new JSONObject();
+        try {
+            serviceAccountJson.put("type", type);
+            serviceAccountJson.put("project_id", projectId);
+            serviceAccountJson.put("private_key_id", privateKeyId);
+            serviceAccountJson.put("private_key", privateKey);
+            serviceAccountJson.put("client_email", clientEmail);
+            serviceAccountJson.put("client_id", clientId);
+            serviceAccountJson.put("auth_uri", authUri);
+            serviceAccountJson.put("token_uri", tokenUri);
+            serviceAccountJson.put("auth_provider_x509_cert_url", authProviderX509CertUrl);
+            serviceAccountJson.put("client_x509_cert_url", clientX509CertUrl);
+            serviceAccountJson.put("universe_domain", universeDomain);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "Service Account JSON: " + serviceAccountJson.toString());
+        InputStream inputStream = new ByteArrayInputStream(serviceAccountJson.toString().getBytes());
+        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(inputStream).createScoped(SCOPES);
+
         googleCredentials.refresh();
         Log.d(TAG, "getAccessToken: " + googleCredentials.getAccessToken().getTokenValue());
         return googleCredentials.getAccessToken().getTokenValue();

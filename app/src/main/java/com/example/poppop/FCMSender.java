@@ -24,7 +24,7 @@ import java.util.Map;
 *
 * */
 public class FCMSender {
-    public static void sendPushToSingleInstance(String OauthToken,final Context activity, final String instanceIdToken, final String title, final String body) {
+    public static void sendPushToSingleInstance(String OauthToken, final Context activity, final String instanceIdToken, final String title, final String body) {
         final String url = "https://fcm.googleapis.com/v1/projects/poppop-datingapp/messages:send";
         // Replace YOUR_PROJECT_ID with your Firebase project ID
         StringRequest myReq = new StringRequest(Request.Method.POST, url,
