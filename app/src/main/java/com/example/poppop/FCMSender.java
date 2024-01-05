@@ -1,93 +1,34 @@
 package com.example.poppop;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.android.volley.Request;
-
-import okhttp3.*;
-import org.json.JSONException;
+import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-* This FCM uses Cloud Messaging API (Legacy)
-* which is still available until 20/6/2024
-*
-* */
 public class FCMSender {
+    private final String Oauth2Token;
 
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final String FCM_API = "https://fcm.googleapis.com/fcm/send";
-    //SERVER_KEY taken from firebase
-    private static final String SERVER_KEY = "AAAArrybYaM:APA91bFDhtZWU9ROTW69oPdP9mJfsFzWqlgQtMi7G2BX7nHEXIdERq-ORB31KJarcuo0AsAt5l7mp3DDVddWHqIZM7Jmlmye6oX5hfFBC724ulvdsXJrH-W6AP279uHIS7qS8ulPuWai"; // Replace with your Server Key
-
-//    public static void sendNotification(String deviceToken, String title, String message){
-//        OkHttpClient client = new OkHttpClient();
-//
-//        JSONObject data = new JSONObject();
-//        try {
-//            data.put("title", title);
-//            data.put("body", message);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            return; // Return or handle the exception as per your requirement
-//        }
-//
-//        JSONObject body = new JSONObject();
-//        try {
-//            body.put("to", deviceToken);
-//            body.put("notification", data);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            return; // Return or handle the exception as per your requirement
-//        }
-//
-//        RequestBody requestBody = RequestBody.create(body.toString(), JSON );
-//        Request request = new Request.Builder()
-//                .url(FCM_API)
-//                .header("Authorization", "Bearer " + SERVER_KEY)
-//                .post(requestBody)
-//                .build();
-//
-//        client.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-//                // Handle failure, such as network issues or API call errors
-//                e.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-//                // Handle response from FCM API
-//                if (response.isSuccessful()) {
-//                    // Request was successful (HTTP 200-299)
-//                    String responseBody = response.body().string();
-//                    System.out.println("FCM Response: " + responseBody);
-//                    // Add your custom logic here to handle the response
-//                } else {
-//                    // Request failed
-//                    System.err.println("FCM Request Failed: " + response.code() + " - " + response.message());
-//                }
-//            }
-//        });
-//    }
-
-    private void sendNotificationToOwner(Context activity,String ownerToken, String newParticipantName, String locationName) {
-        String title = "New Participant!!!";
-        String body = newParticipantName + " has joined your location: " + locationName;
-        sendPushToSingleInstance(activity, ownerToken, title, body);
+    public String getOauth2Token() {
+        return Oauth2Token;
     }
 
-    public static void sendPushToSingleInstance(String OauthToken,final Context activity, final String instanceIdToken, final String title, final String body) {
+    public FCMSender(Context context) {
+        try {
+            Oauth2Token = AccessTokenUtil.getAccessToken(context);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendPushToSingleInstance(final Context activity, final String instanceIdToken, final String title, final String body) {
         final String url = "https://fcm.googleapis.com/v1/projects/poppop-datingapp/messages:send";
         // Replace YOUR_PROJECT_ID with your Firebase project ID
         StringRequest myReq = new StringRequest(Request.Method.POST, url,
@@ -118,12 +59,24 @@ public class FCMSender {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + OauthToken);
+                headers.put("Authorization", "Bearer " + Oauth2Token);
                 headers.put("Content-Type", "application/json");
                 return headers;
             }
         };
 
         Volley.newRequestQueue(activity).add(myReq);
+    }
+    public static void getFCMToken(){
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String token = task.getResult();
+                        Log.d("token", token);
+                        // You can now use the token as needed.
+                    } else {
+                        Log.e("FCM Token", "Failed to get token");
+                    }
+                });
     }
 }
