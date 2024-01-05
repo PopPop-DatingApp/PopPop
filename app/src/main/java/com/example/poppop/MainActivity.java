@@ -1,5 +1,7 @@
 package com.example.poppop;
 
+import static com.example.poppop.Utils.FirebaseUtils.checkIfUserExistsThenAdd;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.e("qwerty", Objects.requireNonNull(task.getResult().getServerAuthCode()));
+//                Log.e("qwerty", Objects.requireNonNull(task.getResult().getServerAuthCode()));
                 firebaseAuth(account.getIdToken());
             } catch (ApiException e) {
                 throw new RuntimeException(e);
@@ -129,18 +131,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void firebaseAuth(String idToken){
+        Log.d("tag", "ready to firebaseAuth");
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     FirebaseUser user = mAuth.getCurrentUser();
-                    UserModel userModel = new UserModel();
-                    userModel.setUserId(user.getUid());
-                    userModel.setName(user.getDisplayName());
-                    userModel.setProfile(user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
+                    if (user != null) {
+                        checkIfUserExistsThenAdd(user).addOnCompleteListener(new OnCompleteListener<UserModel>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UserModel> task) {
+                                if (task.isSuccessful()) {
+                                    UserModel userModel = task.getResult();
+                                    // Handle userModel
+                                    textView.setText("Hello " + userModel.getName());
+                                    Toast.makeText(MainActivity.this, "Save info successfully", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Exception exception = task.getException();
+                                    // Handle failure
+                                    assert exception != null;
+                                    Log.e("exception", exception.toString());
+                                    Toast.makeText(MainActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
 
-                    textView.setText("Hello " + user.getDisplayName());
+                                }
+                            }
+                        });
+                    }
                 }
                 else{
                     Toast.makeText(MainActivity.this, "Fail to sign in", Toast.LENGTH_SHORT).show();
