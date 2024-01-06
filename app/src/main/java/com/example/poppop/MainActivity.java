@@ -1,6 +1,7 @@
 package com.example.poppop;
 
 import static com.example.poppop.Utils.FirebaseUtils.checkIfUserExistsThenAdd;
+import static com.example.poppop.Utils.FirebaseUtils.updateFCMTokenForUser;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -130,40 +131,42 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, RC_SIGN_IN);
     }
 
-    private void firebaseAuth(String idToken){
+    private void firebaseAuth(String idToken) {
         Log.d("tag", "ready to firebaseAuth");
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    if (user != null) {
-                        checkIfUserExistsThenAdd(user).addOnCompleteListener(new OnCompleteListener<UserModel>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UserModel> task) {
-                                if (task.isSuccessful()) {
-                                    UserModel userModel = task.getResult();
-                                    // Handle userModel
-                                    textView.setText("Hello " + userModel.getName());
-                                    Toast.makeText(MainActivity.this, "Save info successfully", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Exception exception = task.getException();
-                                    // Handle failure
-                                    assert exception != null;
-                                    Log.e("exception", exception.toString());
-                                    Toast.makeText(MainActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
-
-                                }
-                            }
-                        });
-                    }
+        mAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
+                            UserModel userModel = task1.getResult();
+                            // update FCM token
+                            updateFCMTokenForUser(userModel)
+                                    .thenAccept(result -> {
+                                        // Handle successful FCM token update
+                                        Toast.makeText(MainActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .exceptionally(throwable -> {
+                                        // Handle FCM token update failure
+                                        Log.e("FCM token update", "Failed: " + throwable.getMessage());
+                                        Toast.makeText(MainActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
+                                        return null;
+                                    });
+                        } else {
+                            Exception exception = task1.getException();
+                            // Handle failure in checkIfUserExistsThenAdd
+                            assert exception != null;
+                            Log.e("exception", exception.toString());
+                            Toast.makeText(MainActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-                else{
-                    Toast.makeText(MainActivity.this, "Fail to sign in", Toast.LENGTH_SHORT).show();
-                }
+            } else {
+                // Handle failure in signInWithCredential
+                Toast.makeText(MainActivity.this, "Fail to sign in", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 }

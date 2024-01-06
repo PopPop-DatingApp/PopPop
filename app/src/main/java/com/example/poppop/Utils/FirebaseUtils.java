@@ -2,11 +2,13 @@ package com.example.poppop.Utils;
 
 import android.util.Log;
 
+import com.example.poppop.FCMSender;
 import com.example.poppop.Model.UserModel;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -14,7 +16,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class FirebaseUtils {
     public static Task<UserModel> checkIfUserExistsThenAdd(FirebaseUser user) {
@@ -50,7 +55,6 @@ public class FirebaseUtils {
 
         return userModel;
     }
-
     private static void addUserToFirestore(DocumentReference userRef, UserModel userModel) {
         // Add user data to Firestore
         userRef.set(userModel)
@@ -67,6 +71,50 @@ public class FirebaseUtils {
                     }
                 });
     }
+    public static CompletableFuture<Void> updateFCMTokenForUser(UserModel existingUserModel) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        FCMSender.getFCMToken()
+                .thenAccept(token -> {
+                    // Use the token as needed
+                    Log.d("FCM token", "Get token successfully");
+
+                    // Update the existing user model with the new FCM token
+                    existingUserModel.setFcmToken(token);
+
+                    // Update the FCM token in Firestore on a background thread
+                    Tasks.call(() -> {
+                        // Create a map with only the FCM token
+                        Map<String, Object> tokenMap = new HashMap<>();
+                        tokenMap.put("fcmToken", existingUserModel.getFcmToken());
+
+                        // Update the FCM token in Firestore
+                        FirebaseFirestore.getInstance().collection("users")
+                                .document(existingUserModel.getUserId())
+                                .update(tokenMap)
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Log.d("FCM token update", "Successfully updated FCM token in Firestore");
+                                        future.complete(null); // Successfully updated FCM token in Firestore
+                                    } else {
+                                        Log.e("FCM token update", "Failed to update FCM token in Firestore: " + task.getException());
+                                        future.completeExceptionally(task.getException());
+                                    }
+                                });
+                        return null;
+                    });
+                })
+                .exceptionally(throwable -> {
+                    // Handle error
+                    Log.e("FCM token", "Get token unsuccessfully: " + throwable.getMessage());
+                    future.completeExceptionally(throwable);
+                    return null;
+                });
+
+        return future;
+    }
+
+
     public static DocumentReference getChatroomReference(String chatroomId){
         return FirebaseFirestore.getInstance().collection("chatrooms").document(chatroomId);
     }

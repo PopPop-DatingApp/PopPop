@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class FCMSender {
     private final String Oauth2Token;
@@ -67,16 +68,21 @@ public class FCMSender {
 
         Volley.newRequestQueue(activity).add(myReq);
     }
-    public static void getFCMToken(){
+
+    public static CompletableFuture<String> getFCMToken() {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String token = task.getResult();
                         Log.d("token", token);
-                        // You can now use the token as needed.
+                        future.complete(token);
                     } else {
                         Log.e("FCM Token", "Failed to get token");
+                        future.completeExceptionally(new RuntimeException("Failed to get token"));
                     }
                 });
+        return future;
     }
 }
