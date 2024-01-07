@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.Utils.FCMSender;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -60,11 +61,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         msgBtn.setOnClickListener(v -> {
-            FCMSender fcmSender = new FCMSender(this);
-            fcmSender.sendPushToSingleInstance(MainActivity.this,
-                    "d1hoNECBRjeYPWyzMRJO8H:APA91bFKLb1eZCrRM4BlC_OWsFG1921eziXVAUz47n9QelJsmYXXFaJkAOgIKYbM81Y5VvDQqATz3ZtA_WrZzv1KETYXi57r0-5Zm2a_n-4RnyP6CeQWIMZmrIRdkH9P6lHRjp8AauLy",
-                    "Hello", "Test");
+            String uid = "In2DzjRHAITh1saZtkcZbTp2PR22";
+            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("uid", uid);
+            startActivity(intent);
         });
+
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
