@@ -1,7 +1,6 @@
 package com.example.poppop;
 
-import static com.example.poppop.Utils.FirebaseUtils.checkIfUserExistsThenAdd;
-import static com.example.poppop.Utils.FirebaseUtils.updateFCMTokenForUser;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.Utils.FirestoreUserUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,11 +27,9 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -138,12 +136,12 @@ public class MainActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 FirebaseUser user = mAuth.getCurrentUser();
                 if (user != null) {
-                    checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
+                    FirestoreUserUtils.checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             Toast.makeText(MainActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                             UserModel userModel = task1.getResult();
                             // update FCM token
-                            updateFCMTokenForUser(userModel)
+                            FirestoreUserUtils.updateFCMTokenForUser(userModel)
                                     .thenAccept(result -> {
                                         // Handle successful FCM token update
                                         Toast.makeText(MainActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
