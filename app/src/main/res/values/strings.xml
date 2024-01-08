@@ -15,4 +15,6 @@
     <string name="service_account_auth_provider_x509_cert_url">https://www.googleapis.com/oauth2/v1/certs</string>
     <string name="service_account_client_x509_cert_url">https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-rc1ow%40poppop-datingapp.iam.gserviceaccount.com</string>
     <string name="service_account_universe_domain">googleapis.com</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
