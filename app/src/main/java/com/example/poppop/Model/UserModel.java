@@ -11,6 +11,15 @@ public class UserModel {
     GeoPoint currentLocation;
     Map<String, Boolean> interests;
     List<String> liked_list, disliked_list, swiped_list;
+    Boolean isPremium;
+
+    public Boolean getPremium() {
+        return isPremium;
+    }
+
+    public void setPremium(Boolean premium) {
+        isPremium = premium;
+    }
 
     public UserModel() {
     }

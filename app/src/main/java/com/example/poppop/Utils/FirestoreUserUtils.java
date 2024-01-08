@@ -42,6 +42,7 @@ public class FirestoreUserUtils {
         userModel.setUserId(user.getUid());
         userModel.setName(user.getDisplayName());
         userModel.setProfile(user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
+        userModel.setPremium(false);
         // Add other fields as needed
 
         return userModel;
