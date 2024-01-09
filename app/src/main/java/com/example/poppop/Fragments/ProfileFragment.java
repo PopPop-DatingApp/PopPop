@@ -8,23 +8,32 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.poppop.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 public class ProfileFragment extends Fragment {
     FirebaseUser firebaseUser;
 
     UserModel userModel;
     TextView name;
+    Button logoutBtn;
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -52,6 +61,18 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         name = view.findViewById(R.id.profile_username);
+        logoutBtn = view.findViewById(R.id.profile_logout);
+        logoutBtn.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            // Optionally, sign out from Google as well
+             GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN);
+             googleSignInClient.signOut().addOnCompleteListener(task -> {
+                 // Update UI after signing out
+                 Intent intent = new Intent(getActivity(), LoginActivity.class);
+                 startActivity(intent);
+                 getActivity().finish();
+             });
+        });
         return view;
     }
 
