@@ -42,6 +42,8 @@ android {
 dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.activity:activity:1.8.2")
+    implementation("androidx.fragment:fragment:1.6.2")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-auth:22.3.0")
@@ -58,6 +60,7 @@ dependencies {
     implementation ("com.google.http-client:google-http-client-jackson2:1.43.1")
     implementation ("com.google.auth:google-auth-library-oauth2-http:1.20.0")
     implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation ("com.github.dhaval2404:imagepicker:2.1")
 
 
 }
