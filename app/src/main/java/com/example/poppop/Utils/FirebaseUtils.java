@@ -30,19 +30,6 @@ public class FirebaseUtils {
     }
 
     public static CollectionReference getAllChatroomCollectionReference(){
-//        CollectionReference ref = FirebaseFirestore.getInstance().collection("chatrooms");
-//        ref.get()
-//            .addOnCompleteListener(task -> {
-//                if (task.isSuccessful()) {
-//                    for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-//                        // Log the document ID
-//                        Log.d("Firestore", "Chatroom document ID: " + document.getId());
-//                    }
-//                } else {
-//                    Log.e("Firestore", "Error getting chatroom documents: " + task.getException());
-//                }
-//            });
-//        return ref;
         return FirebaseFirestore.getInstance().collection("chatrooms");
     }
 
