@@ -39,6 +39,13 @@ public class ChatFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Your code to be executed when the fragment is resumed
+        setupRecyclerView();
+    }
+
     void setupRecyclerView(){
 
         Query query = FirebaseUtils.getAllChatroomCollectionReference()
