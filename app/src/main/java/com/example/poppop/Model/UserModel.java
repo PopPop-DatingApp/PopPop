@@ -1,17 +1,54 @@
 package com.example.poppop.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.List;
 import java.util.Map;
 
-public class UserModel {
-    String userId, name, profile, gender, bio, fcmToken, horoscopeSign;
+public class UserModel implements Parcelable {
+    String userId, name, profile, gender, bio, fcmToken, horoscopeSign, photoUrl;
     Integer age;
     GeoPoint currentLocation;
     Map<String, Boolean> interests;
     List<String> liked_list, disliked_list, swiped_list;
     Boolean isPremium;
+
+    protected UserModel(Parcel in) {
+        userId = in.readString();
+        name = in.readString();
+        profile = in.readString();
+        gender = in.readString();
+        bio = in.readString();
+        fcmToken = in.readString();
+        horoscopeSign = in.readString();
+        if (in.readByte() == 0) {
+            age = null;
+        } else {
+            age = in.readInt();
+        }
+        liked_list = in.createStringArrayList();
+        disliked_list = in.createStringArrayList();
+        swiped_list = in.createStringArrayList();
+        byte tmpIsPremium = in.readByte();
+        isPremium = tmpIsPremium == 0 ? null : tmpIsPremium == 1;
+    }
+
+    public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
+        @Override
+        public UserModel createFromParcel(Parcel in) {
+            return new UserModel(in);
+        }
+
+        @Override
+        public UserModel[] newArray(int size) {
+            return new UserModel[size];
+        }
+    };
 
     public Boolean getPremium() {
         return isPremium;
@@ -22,6 +59,14 @@ public class UserModel {
     }
 
     public UserModel() {
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public UserModel(String userId, String name, String profile) {
@@ -132,5 +177,31 @@ public class UserModel {
 
     public void setProfile(String profile) {
         this.profile = profile;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(userId);
+        dest.writeString(name);
+        dest.writeString(profile);
+        dest.writeString(gender);
+        dest.writeString(bio);
+        dest.writeString(fcmToken);
+        dest.writeString(horoscopeSign);
+        if (age == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(age);
+        }
+        dest.writeStringList(liked_list);
+        dest.writeStringList(disliked_list);
+        dest.writeStringList(swiped_list);
+        dest.writeByte((byte) (isPremium == null ? 0 : isPremium ? 1 : 2));
     }
 }

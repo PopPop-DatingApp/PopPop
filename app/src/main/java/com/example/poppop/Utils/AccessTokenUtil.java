@@ -1,8 +1,10 @@
-package com.example.poppop;
+package com.example.poppop.Utils;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
+
+import com.example.poppop.R;
 import com.google.auth.oauth2.GoogleCredentials;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
