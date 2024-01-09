@@ -1,9 +1,13 @@
 package com.example.poppop.Utils;
 
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.example.poppop.Model.UserModel;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,7 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class FirestoreUserUtils {
-    public static Task<UserModel> checkIfUserExistsThenAdd(FirebaseUser user) {
+    public static Task<UserModel> checkIfUserExistsThenAdd(Activity activity, FirebaseUser user) {
         DocumentReference userRef = FirebaseUtils.getUserReference(user.getUid());
         return userRef.get().continueWith(task -> {
             if (task.isSuccessful()) {
@@ -26,7 +30,7 @@ public class FirestoreUserUtils {
                     return document.toObject(UserModel.class);
                 } else {
                     // User does not exist, create a new UserModel
-                    UserModel newUserModel = createNewUserModel(user);
+                    UserModel newUserModel = createNewUserModel(activity, user);
                     addUserToFirestore(userRef, newUserModel);
                     return newUserModel;
                 }
@@ -36,12 +40,21 @@ public class FirestoreUserUtils {
             }
         });
     }
-    private static UserModel createNewUserModel(FirebaseUser user) {
+    private static UserModel createNewUserModel(Activity activity, FirebaseUser user) {
+        GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        String profilePhotoUrl = null;
+
+        if (googleSignInAccount != null) {
+            // Retrieve the profile photo URL
+            profilePhotoUrl = googleSignInAccount.getPhotoUrl() != null ?
+                    googleSignInAccount.getPhotoUrl().toString() : null;
+        }
         UserModel userModel = new UserModel();
         userModel.setUserId(user.getUid());
         userModel.setName(user.getDisplayName());
         userModel.setProfile(user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
         userModel.setPremium(false);
+        userModel.setPhotoUrl(profilePhotoUrl);
         // Add other fields as needed
 
         return userModel;

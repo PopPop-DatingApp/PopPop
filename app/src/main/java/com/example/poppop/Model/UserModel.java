@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UserModel implements Parcelable {
-    String userId, name, profile, gender, bio, fcmToken, horoscopeSign;
+    String userId, name, profile, gender, bio, fcmToken, horoscopeSign, photoUrl;
     Integer age;
     GeoPoint currentLocation;
     Map<String, Boolean> interests;
@@ -59,6 +59,14 @@ public class UserModel implements Parcelable {
     }
 
     public UserModel() {
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public UserModel(String userId, String name, String profile) {

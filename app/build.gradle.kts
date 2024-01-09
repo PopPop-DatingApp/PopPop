@@ -54,9 +54,10 @@ dependencies {
     implementation ("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation ("com.android.volley:volley:1.2.1")
-    implementation ("com.google.api-client:google-api-client:1.32.1") // Use the latest version available
-    implementation ("com.google.http-client:google-http-client-jackson2:1.41.0") // Use the latest version available
+    implementation ("com.google.api-client:google-api-client:2.2.0")
+    implementation ("com.google.http-client:google-http-client-jackson2:1.43.1")
     implementation ("com.google.auth:google-auth-library-oauth2-http:1.20.0")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
 
 
 }

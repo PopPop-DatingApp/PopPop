@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 FirebaseUser user = mAuth.getCurrentUser();
                 if (user != null) {
-                    FirestoreUserUtils.checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
+                    FirestoreUserUtils.checkIfUserExistsThenAdd(this ,user).addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                             UserModel userModel = task1.getResult();
