@@ -94,6 +94,25 @@ public class FirestoreUserUtils {
         return future;
     }
 
+    public static Task<UserModel> getUserModelByUid(String uid) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(uid);
+
+        return userRef.get().continueWith(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    return document.toObject(UserModel.class);
+                } else {
+                    // Handle the case where the document does not exist
+                    return null;
+                }
+            } else {
+                // Handle exceptions if necessary
+                return null;
+            }
+        });
+    }
+
     public static Task<Void> updateAge(String userId, int age) {
         DocumentReference userRef = FirebaseUtils.getUserReference(userId);
 

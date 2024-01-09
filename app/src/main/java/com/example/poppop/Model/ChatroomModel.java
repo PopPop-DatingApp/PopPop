@@ -6,16 +6,17 @@ import java.util.List;
 
 public class ChatroomModel {
     String chatroomId;
-    List<String> userId;
+    List<String> userIds;
     Timestamp lastMessageTimestamp;
     String lastMessageSenderId;
+    String lastMessage;
 
     public ChatroomModel() {
     }
 
-    public ChatroomModel(String chatroomId, List<String> userId, Timestamp lastMessageTimestamp, String lastMessageSenderId) {
+    public ChatroomModel(String chatroomId, List<String> userIds, Timestamp lastMessageTimestamp, String lastMessageSenderId) {
         this.chatroomId = chatroomId;
-        this.userId = userId;
+        this.userIds = userIds;
         this.lastMessageTimestamp = lastMessageTimestamp;
         this.lastMessageSenderId = lastMessageSenderId;
     }
@@ -28,12 +29,12 @@ public class ChatroomModel {
         this.chatroomId = chatroomId;
     }
 
-    public List<String> getUserId() {
-        return userId;
+    public List<String> getUserIds() {
+        return userIds;
     }
 
-    public void setUserId(List<String> userId) {
-        this.userId = userId;
+    public void setUserIds(List<String> userIds) {
+        this.userIds = userIds;
     }
 
     public Timestamp getLastMessageTimestamp() {
@@ -51,4 +52,13 @@ public class ChatroomModel {
     public void setLastMessageSenderId(String lastMessageSenderId) {
         this.lastMessageSenderId = lastMessageSenderId;
     }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
 }
