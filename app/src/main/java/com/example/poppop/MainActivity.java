@@ -22,9 +22,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.poppop.Fragments.MainFragment;
 import com.example.poppop.Fragments.ProfileFragment;
 import com.example.poppop.Model.UserModel;
-import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.FCMSender;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.databinding.ActivityMainBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -69,13 +70,9 @@ public class MainActivity extends AppCompatActivity {
                 // Chat fragment
             } else if (itemId == R.id.main) {
                 // Main fragment
+                replaceFragment(new MainFragment(), new Bundle());
             } else if (itemId == R.id.profile) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null){
-                    Bundle args = new Bundle();
-                    args.putString("userId", user.getUid());
-                    replaceFragment(new ProfileFragment(), args);
-                }
+                replaceFragment(new ProfileFragment(), new Bundle());
             }
             return true;
         });
