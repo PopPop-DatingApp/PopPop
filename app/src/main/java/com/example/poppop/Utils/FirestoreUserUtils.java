@@ -15,6 +15,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -189,6 +191,19 @@ public class FirestoreUserUtils {
                         Log.e("Firestore", "Error updating user horoscope sign", task.getException());
                     }
                 });
+    }
+
+    public static void updateUserImageList(String userId, List<String> imageList) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userId);
+
+        // Update the "imageList" field in the user's document
+        userRef.update("image_list", imageList).addOnSuccessListener(aVoid -> {
+            // Update successful
+            Log.d("Firestore", "User image list updated successfully");
+        }).addOnFailureListener(e -> {
+            // Handle the failure to update
+            Log.e("Firestore", "Error updating user image list", e);
+        });
     }
 
     public static Task<Void> addOneImageToUser(String userId) {

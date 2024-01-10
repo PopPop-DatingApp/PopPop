@@ -1,46 +1,89 @@
 package com.example.poppop.Utils;
 
 import android.content.Context;
-import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.poppop.Model.UserModel;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.Objects;
-
-import okhttp3.internal.Util;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class StorageUtils {
+
+
     public static void uploadImageToStorage(Context context, UserModel userModel, Uri uri, ImageView imageView) {
-        Integer numOfImages = userModel.getNumOfImages();
-        StorageReference imageRef = FirebaseUtils.getCurrentPicStorageRef().child(numOfImages + ".jpg");
+        // Generate a unique ID based on timestamp and random component
+        String uniqueId = System.currentTimeMillis() + "_" + UUID.randomUUID().toString();
+
+        // Create the StorageReference with the unique ID
+        StorageReference imageRef = FirebaseUtils.getCurrentPicStorageRef().child(uniqueId + ".jpg");
         UploadTask uploadTask = imageRef.putFile(uri);
 
         uploadTask.addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                // Display the uploaded image using Glide
-                Glide.with(context).load(uri).into(imageView);
-                // Add one to the number of images of the user
-                FirestoreUserUtils.addOneImageToUser(userModel.getUserId());
-                Log.d("Umage", "Image uploaded successfully");
+                // Retrieve the download URL
+                imageRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+                    // Add the download URL to the user's image list
+                    List<String> imageList = userModel.getImage_list();
+                    if (imageList == null) {
+                        imageList = new ArrayList<>();
+                    }
+                    imageList.add(downloadUrl.toString());
+                    userModel.setImage_list(imageList);
+
+                    // Update the user's image list in Firestore
+                    FirestoreUserUtils.updateUserImageList(userModel.getUserId(), imageList);
+
+                    // Add one to the number of images of the user
+                    FirestoreUserUtils.addOneImageToUser(userModel.getUserId());
+
+                    // Display the uploaded image using Glide
+                    Glide.with(context).load(uri).into(imageView);
+                }).addOnFailureListener(e -> {
+                    // Handle the failure to get download URL
+                    Toast.makeText(context, "Please try again", Toast.LENGTH_SHORT).show();
+                });
             } else {
                 // Handle failures
-                Log.e("Umage", "Fail to upload image", task.getException());
+                Log.e("Image", "Fail to upload image", task.getException());
+                Toast.makeText(context, "Fail to upload image", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    // this function below get all image Url from a reference in storage
+//    public static void getAllImageUrlsFromStorage(String userId) {
+//        long startTime = System.currentTimeMillis();
+//        StorageReference storageRef = FirebaseUtils.getOtherPicStorageRef(userId);
+//        storageRef.listAll()
+//                .addOnSuccessListener(listResult -> {
+//                    for (StorageReference item : listResult.getItems()) {
+//                        // Get the download URL for each item
+//                        item.getDownloadUrl()
+//                                .addOnSuccessListener(downloadUrl -> {
+//                                    // Handle the download URL (e.g., store or display it)
+//                                    String imageUrl = downloadUrl.toString();
+//                                    Log.d("FirebaseStorage", "Image URL: " + imageUrl);
+//                                })
+//                                .addOnFailureListener(e -> {
+//                                    // Handle the failure to get download URL
+//                                    Log.e("FirebaseStorage", "Error getting download URL", e);
+//                                });
+//                    }
+//                    long endTime = System.currentTimeMillis();
+//                    Log.d("FirebaseStorage", "Function execution time: " + (endTime - startTime) + " milliseconds");
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Handle the failure to list items
+//                    Log.e("FirebaseStorage", "Error listing items", e);
+//                });
+//    }
 
 }

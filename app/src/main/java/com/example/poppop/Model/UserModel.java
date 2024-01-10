@@ -2,11 +2,14 @@ package com.example.poppop.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +18,8 @@ public class UserModel implements Parcelable {
     Integer age, numOfImages;
     GeoPoint currentLocation;
     Map<String, Boolean> interests;
-    List<String> liked_list, disliked_list, swiped_list;
+    List<String> liked_list, disliked_list, swiped_list, image_list;
     Boolean isPremium;
-
 
     protected UserModel(Parcel in) {
         userId = in.readString();
@@ -35,6 +37,7 @@ public class UserModel implements Parcelable {
         liked_list = in.createStringArrayList();
         disliked_list = in.createStringArrayList();
         swiped_list = in.createStringArrayList();
+        image_list = in.createStringArrayList();
         byte tmpIsPremium = in.readByte();
         isPremium = tmpIsPremium == 0 ? null : tmpIsPremium == 1;
     }
@@ -51,6 +54,13 @@ public class UserModel implements Parcelable {
         }
     };
 
+    public List<String> getImage_list() {
+        return image_list;
+    }
+
+    public void setImage_list(List<String> image_list) {
+        this.image_list = image_list;
+    }
 
     public Integer getNumOfImages() {
         return numOfImages;
@@ -218,6 +228,7 @@ public class UserModel implements Parcelable {
         dest.writeStringList(liked_list);
         dest.writeStringList(disliked_list);
         dest.writeStringList(swiped_list);
+        dest.writeStringList(image_list);
         dest.writeByte((byte) (isPremium == null ? 0 : isPremium ? 1 : 2));
     }
 }

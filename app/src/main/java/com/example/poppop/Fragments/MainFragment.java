@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.StorageUtils;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MainFragment extends Fragment {
@@ -81,6 +83,9 @@ public class MainFragment extends Fragment {
                     if(userModel != null){
                         //set up UI
                         main_name.setText(userModel.getName());
+
+                        // retrieve the list of image url for display
+                        List<String> imageList = userModel.getImage_list();
                     }
 //                    else{
 //                        // Handle profile exit
