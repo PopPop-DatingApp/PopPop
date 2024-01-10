@@ -7,6 +7,11 @@ android {
     namespace = "com.example.poppop"
     compileSdk = 34
 
+    viewBinding{
+        enable = true
+    }
+
+
     defaultConfig {
         applicationId = "com.example.poppop"
         minSdk = 24
