@@ -7,12 +7,12 @@ import android.util.Log;
 import com.example.poppop.Model.UserModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +54,7 @@ public class FirestoreUserUtils {
         userModel.setName(user.getDisplayName());
         userModel.setProfile(user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
         userModel.setPremium(false);
+        userModel.setNumOfImages(0);
         userModel.setPhotoUrl(profilePhotoUrl);
         // Add other fields as needed
 
@@ -189,4 +190,30 @@ public class FirestoreUserUtils {
                     }
                 });
     }
+
+    public static Task<Void> addOneImageToUser(String userId) {
+        return updateNumOfImages(userId, 1);
+    }
+
+    public static Task<Void> subtractOneImageFromUser(String userId) {
+        return updateNumOfImages(userId, -1);
+    }
+
+    private static Task<Void> updateNumOfImages(String userId, int numOfImagesChange) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userId);
+
+        // Use FieldValue.increment to atomically update the numOfImages
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("numOfImages", FieldValue.increment(numOfImagesChange));
+
+        return userRef.update(updates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Firestore", "User numOfImages updated successfully");
+                    } else {
+                        Log.e("Firestore", "Error updating user numOfImages", task.getException());
+                    }
+                });
+    }
+
 }

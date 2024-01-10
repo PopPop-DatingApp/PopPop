@@ -10,6 +10,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -89,14 +91,14 @@ public class FirebaseUtils {
     }
 
 
-//    public static StorageReference  getCurrentProfilePicStorageRef(){
-//        return FirebaseStorage.getInstance().getReference().child("profile_pic")
-//                .child(FirebaseUtil.currentUserId());
-//    }
-//
-//    public static StorageReference  getOtherProfilePicStorageRef(String otherUserId){
-//        return FirebaseStorage.getInstance().getReference().child("profile_pic")
-//                .child(otherUserId);
-//    }
+    public static StorageReference getCurrentPicStorageRef(){
+        return FirebaseStorage.getInstance().getReference().child("images")
+                .child(FirebaseUtils.currentUserId());
+    }
+
+    public static StorageReference getOtherPicStorageRef(String otherUserId){
+        return FirebaseStorage.getInstance().getReference().child("images")
+                .child(otherUserId);
+    }
 
 }

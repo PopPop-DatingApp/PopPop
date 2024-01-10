@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.StorageUtils;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -89,21 +90,6 @@ public class MainFragment extends Fragment {
             }
         });
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            Uri fileUri = data.getData();
-            imageView.setImageURI(fileUri);
-
-        } else if (resultCode == ImagePicker.RESULT_ERROR) {
-            Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private final ActivityResultLauncher<Intent> startForProfileImageResult =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                     result -> {
@@ -113,7 +99,8 @@ public class MainFragment extends Fragment {
                         if (resultCode == Activity.RESULT_OK && data != null) {
                             Uri fileUri = data.getData();
                             // Handle the result
-                            imageView.setImageURI(fileUri);
+//                            imageView.setImageURI(fileUri);
+                            StorageUtils.uploadImageToStorage(requireContext(),userModel,fileUri, imageView);
                         } else if (resultCode == ImagePicker.RESULT_ERROR) {
                             Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
                         } else {

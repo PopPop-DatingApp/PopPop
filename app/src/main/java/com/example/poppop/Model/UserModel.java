@@ -12,11 +12,12 @@ import java.util.Map;
 
 public class UserModel implements Parcelable {
     String userId, name, profile, gender, bio, fcmToken, horoscopeSign, photoUrl;
-    Integer age;
+    Integer age, numOfImages;
     GeoPoint currentLocation;
     Map<String, Boolean> interests;
     List<String> liked_list, disliked_list, swiped_list;
     Boolean isPremium;
+
 
     protected UserModel(Parcel in) {
         userId = in.readString();
@@ -49,6 +50,15 @@ public class UserModel implements Parcelable {
             return new UserModel[size];
         }
     };
+
+
+    public Integer getNumOfImages() {
+        return numOfImages;
+    }
+
+    public void setNumOfImages(Integer numOfImages) {
+        this.numOfImages = numOfImages;
+    }
 
     public Boolean getPremium() {
         return isPremium;
@@ -198,6 +208,12 @@ public class UserModel implements Parcelable {
         } else {
             dest.writeByte((byte) 1);
             dest.writeInt(age);
+        }
+        if (numOfImages == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(numOfImages);
         }
         dest.writeStringList(liked_list);
         dest.writeStringList(disliked_list);
