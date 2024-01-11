@@ -3,6 +3,7 @@ package com.example.poppop.Utils;
 
 import android.util.Log;
 
+import com.example.poppop.Model.ImageModel;
 import com.example.poppop.Model.UserModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -181,7 +182,7 @@ public class FirestoreUserUtils {
                 });
     }
 
-    public static void updateUserImageList(String userId, List<String> imageList) {
+    public static void updateUserImageList(String userId, List<ImageModel> imageList) {
         DocumentReference userRef = FirebaseUtils.getUserReference(userId);
 
         // Update the "imageList" field in the user's document

@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.poppop.Model.ImageModel;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirebaseUtils;
@@ -59,6 +61,7 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         main_name = view.findViewById(R.id.main_name);
         Button pickBtn = view.findViewById(R.id.button2);
+        Button deleteBtn = view.findViewById(R.id.button);
         imageView = view.findViewById(R.id.imageView);
         pickBtn.setOnClickListener(v -> {
             ImagePicker.with(this)
@@ -70,6 +73,25 @@ public class MainFragment extends Fragment {
                         return null;
                     });
         });
+
+        deleteBtn.setOnClickListener(v -> {
+            if (userModel.getNumOfImages() > 0) {
+                StorageUtils.deleteImageFromStorage(userModel, userModel.getImage_list().get(userModel.getNumOfImages() - 1))
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                // Image deleted successfully, now update the UI
+                                displayUserDetails(firebaseUser.getUid());
+                                Toast.makeText(requireContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Handle failure
+                                Toast.makeText(requireContext(), "Failed to delete image: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            } else {
+                Toast.makeText(requireContext(), "There is no image to delete", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return view;
     }
 
@@ -85,7 +107,7 @@ public class MainFragment extends Fragment {
                         main_name.setText(userModel.getName());
 
                         // retrieve the list of image url for display
-                        List<String> imageList = userModel.getImage_list();
+                        List<ImageModel> imageList = userModel.getImage_list();
                     }
 //                    else{
 //                        // Handle profile exit
@@ -105,7 +127,17 @@ public class MainFragment extends Fragment {
                             Uri fileUri = data.getData();
                             // Handle the result
 //                            imageView.setImageURI(fileUri);
-                            StorageUtils.uploadImageToStorage(requireContext(),userModel,fileUri, imageView);
+                            StorageUtils.uploadImageToStorage(requireContext(),userModel,fileUri, imageView)
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            // Image uploaded successfully, and task.getResult() contains the download URL
+                                            displayUserDetails(firebaseUser.getUid());
+                                        } else {
+                                            // Handle failure
+                                            Exception exception = task.getException();
+                                            // Handle the exception
+                                        }
+                                    });
                         } else if (resultCode == ImagePicker.RESULT_ERROR) {
                             Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
                         } else {
