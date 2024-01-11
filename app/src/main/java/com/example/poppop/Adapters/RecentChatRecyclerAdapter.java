@@ -40,20 +40,15 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
         FirebaseUtils.getOtherUserFromChatroom(model.getUserIds())
                 .get().addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-                        Log.d("qwerty", "Finish get other user");
                         boolean lastMessageSentByMe = model.getLastMessageSenderId().equals(FirebaseUtils.currentUserId());
                         UserModel otherUserModel = task.getResult().toObject(UserModel.class);
-                        Log.d("qwerty",otherUserModel.getUserId() );
-                        Log.d("qwerty", "Start to get picture");
 
                         FirebaseUtils.getOtherProfilePic(otherUserModel.getUserId())
                                 .addOnCompleteListener(t -> {
                                     if (t.isSuccessful()) {
-                                        Log.d("qwerty", "Finish get pic");
                                         String profileUrl = t.getResult();
                                         // Do something with the profile URL
                                         Utils.setProfilePic(context, profileUrl,holder.profilePic);
-                                        Log.d("qwerty", "Finish set up profile pic");
                                     } else {
                                         Exception e = t.getException();
                                         // Handle the error

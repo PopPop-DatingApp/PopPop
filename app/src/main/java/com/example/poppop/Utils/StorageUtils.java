@@ -42,7 +42,7 @@ public class StorageUtils {
                     FirestoreUserUtils.updateUserImageList(userModel.getUserId(), imageList);
 
                     // Add one to the number of images of the user
-                    FirestoreUserUtils.addOneImageToUser(userModel.getUserId());
+                    FirestoreUserUtils.addOneImageToUser(userModel.getUserId(), imageList.get(0));
 
                     // Display the uploaded image using Glide
                     Glide.with(context).load(uri).into(imageView);

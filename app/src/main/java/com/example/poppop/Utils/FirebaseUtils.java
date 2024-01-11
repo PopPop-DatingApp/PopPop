@@ -60,17 +60,14 @@ public class FirebaseUtils {
     }
 
     public static Task<String> getOtherProfilePic(String otherUserId) {
-        Log.d("qwerty", "start to get ref");
         Task<DocumentSnapshot> task = FirebaseUtils.getUserReference(otherUserId).get();
 
         return task.continueWith(task1 -> {
             if (task1.isSuccessful()) {
-                Log.d("qwerty", "Finish get ref");
                 DocumentSnapshot documentSnapshot = task1.getResult();
                 if (documentSnapshot.exists()) {
-                    Log.d("qwerty", "Document exists");
                     // Get the profile field value
-                    String profileUrl = documentSnapshot.getString("profile");
+                    String profileUrl = documentSnapshot.getString("photoUrl");
                     // Now you have the profileUrl, you can use it as needed
                     if (profileUrl != null) {
                         // Do something with the profile URL
