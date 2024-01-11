@@ -2,20 +2,24 @@ package com.example.poppop.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class UserModel implements Parcelable {
     String userId, name, profile, gender, bio, fcmToken, horoscopeSign, photoUrl;
-    Integer age;
+    Integer age, numOfImages;
     GeoPoint currentLocation;
     Map<String, Boolean> interests;
     List<String> liked_list, disliked_list, swiped_list;
+    List<ImageModel> image_list;
     Boolean isPremium;
 
     protected UserModel(Parcel in) {
@@ -34,6 +38,7 @@ public class UserModel implements Parcelable {
         liked_list = in.createStringArrayList();
         disliked_list = in.createStringArrayList();
         swiped_list = in.createStringArrayList();
+        image_list = in.createTypedArrayList(ImageModel.CREATOR);
         byte tmpIsPremium = in.readByte();
         isPremium = tmpIsPremium == 0 ? null : tmpIsPremium == 1;
     }
@@ -49,6 +54,22 @@ public class UserModel implements Parcelable {
             return new UserModel[size];
         }
     };
+
+    public List<ImageModel> getImage_list() {
+        return image_list;
+    }
+
+    public void setImage_list(List<ImageModel> image_list) {
+        this.image_list = image_list;
+    }
+
+    public Integer getNumOfImages() {
+        return numOfImages;
+    }
+
+    public void setNumOfImages(Integer numOfImages) {
+        this.numOfImages = numOfImages;
+    }
 
     public Boolean getPremium() {
         return isPremium;
@@ -199,9 +220,16 @@ public class UserModel implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeInt(age);
         }
+        if (numOfImages == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(numOfImages);
+        }
         dest.writeStringList(liked_list);
         dest.writeStringList(disliked_list);
         dest.writeStringList(swiped_list);
+        dest.writeTypedList(image_list);
         dest.writeByte((byte) (isPremium == null ? 0 : isPremium ? 1 : 2));
     }
 }

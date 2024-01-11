@@ -1,26 +1,25 @@
 package com.example.poppop.Utils;
 
 
-import android.app.Activity;
 import android.util.Log;
 
+import com.example.poppop.Model.ImageModel;
 import com.example.poppop.Model.UserModel;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class FirestoreUserUtils {
-    public static Task<UserModel> checkIfUserExistsThenAdd(Activity activity, FirebaseUser user) {
+    public static Task<UserModel> checkIfUserExistsThenAdd(FirebaseUser user) {
         DocumentReference userRef = FirebaseUtils.getUserReference(user.getUid());
         return userRef.get().continueWith(task -> {
             if (task.isSuccessful()) {
@@ -30,7 +29,7 @@ public class FirestoreUserUtils {
                     return document.toObject(UserModel.class);
                 } else {
                     // User does not exist, create a new UserModel
-                    UserModel newUserModel = createNewUserModel(activity, user);
+                    UserModel newUserModel = createNewUserModel(user);
                     addUserToFirestore(userRef, newUserModel);
                     return newUserModel;
                 }
@@ -40,21 +39,14 @@ public class FirestoreUserUtils {
             }
         });
     }
-    private static UserModel createNewUserModel(Activity activity, FirebaseUser user) {
-        GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(activity);
-        String profilePhotoUrl = null;
-
-        if (googleSignInAccount != null) {
-            // Retrieve the profile photo URL
-            profilePhotoUrl = googleSignInAccount.getPhotoUrl() != null ?
-                    googleSignInAccount.getPhotoUrl().toString() : null;
-        }
+    private static UserModel createNewUserModel(FirebaseUser user) {
         UserModel userModel = new UserModel();
         userModel.setUserId(user.getUid());
         userModel.setName(user.getDisplayName());
         userModel.setProfile(user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
         userModel.setPremium(false);
-        userModel.setPhotoUrl(profilePhotoUrl);
+        userModel.setNumOfImages(0);
+        userModel.setPhotoUrl(userModel.getProfile());
         // Add other fields as needed
 
         return userModel;
@@ -189,4 +181,71 @@ public class FirestoreUserUtils {
                     }
                 });
     }
+
+    public static void updateUserImageList(String userId, List<ImageModel> imageList) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userId);
+
+        // Update the "imageList" field in the user's document
+        userRef.update("image_list", imageList).addOnSuccessListener(aVoid -> {
+            // Update successful
+            Log.d("Firestore", "User image list updated successfully");
+        }).addOnFailureListener(e -> {
+            // Handle the failure to update
+            Log.e("Firestore", "Error updating user image list", e);
+        });
+    }
+
+    public static void addOneImageToUser(String userId, String firstImageUrl) {
+        updateNumOfImages(userId, 1, firstImageUrl);
+    }
+
+    public static Task<Void> subtractOneImageFromUser(String userId, String firstImageUrl) {
+        return updateNumOfImages(userId, -1, firstImageUrl);
+    }
+
+    private static Task<Void> updateNumOfImages(String userId, int numOfImagesChange, String firstImageUrl) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userId);
+
+        // Use FieldValue.increment to atomically update the numOfImages
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("numOfImages", FieldValue.increment(numOfImagesChange));
+
+        return userRef.update(updates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Firestore", "User numOfImages updated successfully");
+                        checkAndUpdatePhotoUrl(userRef, firstImageUrl);
+                    } else {
+                        Log.e("Firestore", "Error updating user numOfImages", task.getException());
+                    }
+                });
+    }
+
+    private static void checkAndUpdatePhotoUrl(DocumentReference userRef, String firstImageUrl) {
+        userRef.get().addOnCompleteListener(snapshotTask -> {
+            if (snapshotTask.isSuccessful()) {
+                DocumentSnapshot document = snapshotTask.getResult();
+                if (document.exists()) {
+                    // Assuming "photoUrl" and "profile" are the field names
+                    int numOfImages = Objects.requireNonNull(document.getLong("numOfImages")).intValue();
+                    if (numOfImages == 0) {
+                        String profileString = document.getString("profile");
+                        // Update the "photoUrl" field with the string from "profile"
+                        userRef.update("photoUrl", profileString)
+                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "photoUrl updated successfully"))
+                                .addOnFailureListener(e -> Log.e("Firestore", "Error updating photoUrl", e));
+                    } else{
+                        userRef.update("photoUrl", firstImageUrl)
+                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "photoUrl updated successfully"))
+                                .addOnFailureListener(e -> Log.e("Firestore", "Error updating photoUrl", e));
+                    }
+                } else {
+                    Log.e("Firestore", "Document does not exist");
+                }
+            } else {
+                Log.e("Firestore", "Error getting document", snapshotTask.getException());
+            }
+        });
+    }
+
 }
