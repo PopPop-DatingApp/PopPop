@@ -52,6 +52,7 @@ dependencies {
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.2")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation ("com.firebaseui:firebase-ui-storage:7.2.0")
+    implementation("androidx.cardview:cardview:1.0.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
