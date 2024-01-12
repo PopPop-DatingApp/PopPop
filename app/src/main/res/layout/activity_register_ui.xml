@@ -8,7 +8,7 @@
     tools:context=".LoginActivity_UI">
 
     <ImageView
-        android:id="@+id/logoImageView"
+        android:id="@+id/boardingNameImage"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginTop="80dp"
@@ -29,7 +29,7 @@
         android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logoImageView"
+        app:layout_constraintTop_toBottomOf="@+id/boardingNameImage"
         />
 
     <EditText
@@ -72,7 +72,7 @@
         app:layout_constraintTop_toBottomOf="@+id/passwordRegisterText" />
 
     <Button
-        android:id="@+id/RegisterButton"
+        android:id="@+id/boardingNameBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -94,7 +94,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RegisterButton"
+        app:layout_constraintTop_toBottomOf="@+id/boardingNameBtn"
         />
 
     <ImageButton

@@ -17,11 +17,25 @@
         android:theme="@style/Theme.PopPop"
         tools:targetApi="31">
         <activity
+            android:name=".boardingpages.horoscopeBoarding"
+            android:exported="false" />
+        <activity
+            android:name=".boardingpages.boardingGender"
+            android:exported="false" />
+        <activity
+            android:name=".boardingpages.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".boardingpages.boardingAge"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".boardingpages.boardingName" -->
+        <!-- android:exported="false" /> -->
+        <activity
             android:name=".RegisterActivity_UI"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".LoginActivity_UI"-->
-<!--            android:exported="false" />-->
+        <activity
+            android:name=".LoginActivity_UI"
+            android:exported="false" />
         <activity
             android:name=".ChatActivity"
             android:exported="false" />
@@ -29,7 +43,7 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity_UI"
+            android:name=".boardingpages.boardingName"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
