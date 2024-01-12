@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +147,24 @@ public class FirestoreUserUtils {
                         Log.d("Firestore", "User bio updated successfully");
                     } else {
                         Log.e("Firestore", "Error updating user bio", task.getException());
+                    }
+                });
+    }
+
+    public static Task<Void> updateLocation(String userId, GeoPoint geoPoint) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("currentLocation", geoPoint);
+
+        return userRef.update(updates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Log or perform any other action upon success if needed
+                        Log.d("Firestore", "User location updated successfully");
+                    } else {
+                        // Handle the error
+                        Log.e("Firestore", "Error updating user location", task.getException());
                     }
                 });
     }

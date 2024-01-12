@@ -1,34 +1,33 @@
 package com.example.poppop.Fragments;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.poppop.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
+import com.example.poppop.Utils.LocationUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
-import java.util.Objects;
-
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements LocationUtils.GeoPointResultListener {
     FirebaseUser firebaseUser;
 
     UserModel userModel;
@@ -45,9 +44,9 @@ public class ProfileFragment extends Fragment {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (firebaseUser == null) {
-//            Intent intent = new Intent(getActivity(), LoginActivity.class);
-//            startActivity(intent);
-//            getActivity().finish();
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish();
         } else {
             // If user is logged in, display user details
             displayUserDetails(firebaseUser.getUid());
@@ -86,13 +85,38 @@ public class ProfileFragment extends Fragment {
                     if(userModel != null){
                         //set up UI
                         name.setText(userModel.getName());
+                        requestUserLocation();
                     }
                     else{
                         // Handle profile exit
-                        getActivity().getSupportFragmentManager().popBackStack();
+                        requireActivity().getSupportFragmentManager().popBackStack();
                     }
                 }
             }
         });
+    }
+
+    private void requestUserLocation() {
+        LocationUtils.getCurrentLocation(requireActivity(), requireContext(), this);
+    }
+
+    @Override
+    public void onGeoPointResult(GeoPoint geoPoint) {
+        if(geoPoint != null){
+            //update to firestore
+            FirestoreUserUtils.updateLocation(userModel.getUserId(), geoPoint)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Handle success
+                            Toast.makeText(requireContext(), "Update location successfully", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Handle error
+                            Toast.makeText(requireContext(), "Update location fail", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else{
+            Toast.makeText(requireContext(), "Fail to get location", Toast.LENGTH_SHORT).show();
+
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.poppop;
 
 
+import static com.example.poppop.Utils.Utils.checkNotificationPermission;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.poppop.Fragments.ChatFragment;
 import com.example.poppop.Fragments.MainFragment;
 import com.example.poppop.Fragments.ProfileFragment;
+import com.example.poppop.Utils.Utils;
 import com.example.poppop.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -58,12 +61,9 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        Utils.checkNotificationPermission(MainActivity.this, this);
+        Utils.checkLocationPermission(MainActivity.this, this);
 
-                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-            }
-        }
     }
 
     private void replaceFragment(Fragment fragment, Bundle args) {
