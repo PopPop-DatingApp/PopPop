@@ -24,6 +24,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.stripe.android.PaymentConfiguration;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -35,20 +36,29 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login); // Updated layout resource
-
+        PaymentConfiguration.init(
+                getApplicationContext(),
+                "pk_test_51OXKSzEP1gGhSTU9IBjjvSKHnLbvHLfP7VtvYjE6MA1KEVaWU9jvbTgFCdoHe85D2ddpHGi63E7mcjtTuUuG3EN500TXV8w8PW"
+        );
         // Updated variable name
         Button loginBtn = findViewById(R.id.login_ggBtn); // Updated button ID
 
         mAuth = FirebaseAuth.getInstance();
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken(getString(R.string.default_web_client_id))
+//                .requestEmail()
+//                .build();
+//
+//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         loginBtn.setOnClickListener(this::buttonGoogleSignIn);
+
+        Button paymentBtn = findViewById(R.id.paymentBtn);
+        paymentBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, CheckoutActivity.class);
+            startActivityForResult(intent, 1);
+        });
     }
 
     @Override
