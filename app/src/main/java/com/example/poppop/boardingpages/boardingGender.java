@@ -36,8 +36,8 @@ public class boardingGender extends AppCompatActivity {
         // Assuming you passed the user data from the previous activity
         userName = getIntent().getStringExtra("userName");
         userAge = getIntent().getIntExtra("userAge", 18);
-        tempDataTextView.setText("Temp Data: " + userName);
-        tempDataTextView2.setText("Temp Data: " + userAge);
+//        tempDataTextView.setText("Temp Data: " + userName);
+//        tempDataTextView2.setText("Temp Data: " + userAge);
 
         maleImageView.setOnClickListener(new View.OnClickListener() {
             @Override

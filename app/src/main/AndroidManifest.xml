@@ -17,6 +17,9 @@
         android:theme="@style/Theme.PopPop"
         tools:targetApi="31">
         <activity
+            android:name=".boardingpages.hobbyBoarding"
+            android:exported="false" />
+        <activity
             android:name=".boardingpages.horoscopeBoarding"
             android:exported="false" />
         <activity
