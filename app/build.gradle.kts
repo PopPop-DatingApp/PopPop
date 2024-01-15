@@ -42,10 +42,11 @@ android {
     packagingOptions {
         exclude("META-INF/DEPENDENCIES")
     }
+
+
 }
 
 dependencies {
-
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -53,6 +54,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.firebase:firebase-messaging:23.4.0")
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.2")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -63,6 +65,5 @@ dependencies {
     implementation ("com.google.http-client:google-http-client-jackson2:1.43.1")
     implementation ("com.google.auth:google-auth-library-oauth2-http:1.20.0")
     implementation ("com.github.bumptech.glide:glide:4.15.1")
-
-
+    implementation ("com.github.yuyakaido:CardStackView:v2.3.4")
 }

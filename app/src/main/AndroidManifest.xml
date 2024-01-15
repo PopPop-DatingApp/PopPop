@@ -17,6 +17,12 @@
         android:theme="@style/Theme.PopPop"
         tools:targetApi="31">
         <activity
+            android:name=".UI_ForPages.swipingActivityUI"
+            android:exported="false" />
+        <activity
+            android:name=".UI_ForPages.UI_PersonalInformation"
+            android:exported="false" />
+        <activity
             android:name=".boardingpages.hobbyBoarding"
             android:exported="false" />
         <activity
@@ -26,7 +32,7 @@
             android:name=".boardingpages.boardingGender"
             android:exported="false" />
         <activity
-            android:name=".boardingpages.MainActivity"
+            android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".boardingpages.boardingAge"
