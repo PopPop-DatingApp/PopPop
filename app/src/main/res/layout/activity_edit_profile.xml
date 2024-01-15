@@ -65,7 +65,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
             <LinearLayout
                 android:id="@+id/aboutMe_layout"
@@ -93,7 +96,8 @@
                     android:layout_marginTop="10dp"
                     android:hint="Enter your 'About Me' here..."
                     android:background="@color/white"
-                    android:minHeight="48dp" />
+                    android:minHeight="48dp"
+                    android:inputType="text" />
             </LinearLayout>
 
             <LinearLayout
@@ -147,20 +151,44 @@
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
-
-                <TextView
+                <LinearLayout
                     android:id="@+id/genderPrefBlock"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_centerHorizontal="true"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+
+                    android:paddingHorizontal="16dp"
+                    android:layout_gravity="center"
                     android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingStart="18dp"
-                    android:text="Everyone"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    android:background="@drawable/textview_background_selector">
+
+                    <TextView
+                        android:id="@+id/genderPrefValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_vertical"
+                        android:text="Everyone"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="Edit"
+                        android:src="@drawable/icon_next" />
+
+
+
+                </LinearLayout>
+                <!-- your_layout.xml -->
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -262,13 +290,14 @@
                     android:textStyle="bold" />
 
                 <LinearLayout
+                    android:id="@+id/nameBlock"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="10dp"
-                    android:background="@color/white">
+                    android:background="@drawable/textview_background_selector">
 
                     <TextView
                         android:id="@+id/nameTextView"
@@ -276,19 +305,21 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Name"
-
                         android:textSize="16sp"
                         android:textColor="@color/black"
                         android:textStyle="bold"/>
 
                     <!-- Value TextView -->
-                    <TextView
+                    <EditText
                         android:id="@+id/nameValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:textAlignment="viewEnd"
+                        android:inputType="text"
+                        android:textSize="16sp"
                         android:textColor="@color/dark_gray"
-                        android:textSize="16sp"/>
+                        android:background="@color/white"
+                        android:clickable="false"/>
 
                     <!-- Edit ImageButton -->
                     <ImageButton
@@ -303,6 +334,7 @@
                         android:background="?attr/selectableItemBackground"/>
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/ageBlock"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
@@ -331,19 +363,27 @@
                         android:textColor="@color/dark_gray"
                         android:textSize="16sp"/>
 
+                    <NumberPicker
+                        android:id="@+id/ageNumberPicker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"/>
+
                     <!-- Edit ImageButton -->
                     <ImageButton
                         android:id="@+id/editAgeBtn"
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/icon_next"
-                        android:contentDescription="Edit"
                         android:layout_gravity="center"
-                        android:background="?attr/selectableItemBackground"/>
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="Edit"
+                        android:src="@drawable/icon_next"
+                        tools:ignore="TouchTargetSizeCheck" />
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/genderBlock"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
@@ -376,13 +416,15 @@
                         android:id="@+id/editGenderBtn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/icon_next"
-                        android:contentDescription="Edit"
                         android:layout_gravity="center"
-                        android:background="?attr/selectableItemBackground"/>
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="Edit"
+                        android:src="@drawable/icon_next"
+                        tools:ignore="TouchTargetSizeCheck" />
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/horoSignBlock"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
@@ -408,6 +450,15 @@
                         android:layout_marginStart="8dp"
                         android:textColor="@color/dark_gray"
                         android:textSize="16sp"/>
+
+                    <Spinner
+                        android:id="@+id/HoroSignSpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="16sp"
+                        android:visibility="gone"/>
 
                     <!-- Edit ImageButton -->
                     <ImageButton
