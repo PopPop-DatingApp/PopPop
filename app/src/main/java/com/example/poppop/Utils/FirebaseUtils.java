@@ -30,7 +30,9 @@ public class FirebaseUtils {
     public static DocumentReference getUserReference(String userId){
         return FirebaseFirestore.getInstance().collection("users").document(userId);
     }
-
+    public static CollectionReference getAllInterestsCollectionReference(){
+        return FirebaseFirestore.getInstance().collection("interests");
+    }
     public static CollectionReference getAllChatroomCollectionReference(){
         return FirebaseFirestore.getInstance().collection("chatrooms");
     }

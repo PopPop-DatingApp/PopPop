@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.Utils.FirestoreUserUtils;
+import com.example.poppop.boardingpages.boardingName;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -85,17 +86,19 @@ public class LoginActivity extends AppCompatActivity {
                         if (task1.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                             UserModel userModel = task1.getResult();
+                            if (userModel != null && userModel.getAge() == null){
+                                startActivity(new Intent(LoginActivity.this, boardingName.class));
+                            }else{
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            }
                             FirestoreUserUtils.updateFCMTokenForUser(userModel)
                                     .thenAccept(result -> {
                                         Toast.makeText(LoginActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                        finish();
                                     })
                                     .exceptionally(throwable -> {
                                         Log.e("FCM token update", "Failed: " + throwable.getMessage());
                                         Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                        finish();
                                         return null;
                                     });
                         } else {
