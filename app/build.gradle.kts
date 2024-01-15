@@ -66,6 +66,5 @@ dependencies {
     implementation ("com.google.auth:google-auth-library-oauth2-http:1.20.0")
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     implementation ("com.github.dhaval2404:imagepicker:2.1")
-
-
+    implementation ("com.stripe:stripe-android:20.36.1")
 }

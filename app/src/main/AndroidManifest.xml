@@ -22,8 +22,14 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAE34Qkm2RwbpuQqH1O7ZPVI2dj5WwqT-0" />
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
         <activity
             android:name=".ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CheckoutActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
