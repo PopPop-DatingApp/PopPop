@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task1.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                             UserModel userModel = task1.getResult();
-                            if (userModel != null && userModel.getAge() == null){
+                            if (userModel.getAge() == null){
                                 startActivity(new Intent(LoginActivity.this, boardingName.class));
                             }else{
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
