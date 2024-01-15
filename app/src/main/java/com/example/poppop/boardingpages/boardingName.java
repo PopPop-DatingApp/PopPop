@@ -1,6 +1,5 @@
 package com.example.poppop.boardingpages;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -8,13 +7,12 @@ import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.poppop.Model.UserModel;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.poppop.R;
 
 public class boardingName extends AppCompatActivity {
 
-    private EditText nameEditText;
-    private Button registerButton;
     private String userName = "";
 
     @Override
@@ -23,8 +21,8 @@ public class boardingName extends AppCompatActivity {
         setContentView(R.layout.activity_boarding_name);
 
 
-        nameEditText = findViewById(R.id.boardingNameEditText);
-        registerButton = findViewById(R.id.boardingNameBtn);
+        EditText nameEditText = findViewById(R.id.boardingNameEditText);
+        Button registerButton = findViewById(R.id.boardingNameBtn);
 
         nameEditText.addTextChangedListener(new TextWatcher() {
             @Override
