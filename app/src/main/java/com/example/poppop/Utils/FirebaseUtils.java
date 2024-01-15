@@ -24,9 +24,6 @@ public class FirebaseUtils {
         return FirebaseAuth.getInstance().getUid();
     }
 
-    public static String currentUserName(){
-        return FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-    }
     public static DocumentReference getUserReference(String userId){
         return FirebaseFirestore.getInstance().collection("users").document(userId);
     }
