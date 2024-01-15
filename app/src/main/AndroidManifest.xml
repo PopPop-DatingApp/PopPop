@@ -26,6 +26,35 @@
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
         <activity
+            android:name=".UI_ForPages.swipingActivityUI"
+            android:exported="false" />
+        <activity
+            android:name=".UI_ForPages.UI_PersonalInformation"
+            android:exported="false" />
+        <activity
+            android:name=".boardingpages.hobbyBoarding"
+            android:exported="false" />
+        <activity
+            android:name=".boardingpages.horoscopeBoarding"
+            android:exported="false" />
+        <activity
+            android:name=".boardingpages.boardingGender"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".boardingpages.boardingAge"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".boardingpages.boardingName" -->
+        <!-- android:exported="false" /> -->
+        <activity
+            android:name=".RegisterActivity_UI"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity_UI"
+            android:exported="false" />
+        <activity
             android:name=".ChatActivity"
             android:exported="false" />
         <activity
@@ -35,7 +64,7 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".boardingpages.boardingName"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

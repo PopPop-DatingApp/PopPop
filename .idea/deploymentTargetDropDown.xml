@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="deploymentTargetDropDown">
+<<<<<<< HEAD
     <targetSelectedWithDropDown>
       <Target>
         <type value="QUICK_BOOT_TARGET" />
+=======
+    <runningDeviceTargetsSelectedWithDialog>
+      <Target>
+        <type value="RUNNING_DEVICE_TARGET" />
+>>>>>>> 88c6f03cea90c704d349e6dae10cb2e698152b7f
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />

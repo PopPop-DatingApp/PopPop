@@ -7,6 +7,11 @@ android {
     namespace = "com.example.poppop"
     compileSdk = 34
 
+    viewBinding{
+        enable = true
+    }
+
+
     defaultConfig {
         applicationId = "com.example.poppop"
         minSdk = 24
@@ -37,10 +42,11 @@ android {
     packagingOptions {
         exclude("META-INF/DEPENDENCIES")
     }
+
+
 }
 
 dependencies {
-
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.activity:activity:1.8.2")
     implementation("androidx.fragment:fragment:1.6.2")
@@ -50,6 +56,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.firebase:firebase-messaging:23.4.0")
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.2")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation ("com.firebaseui:firebase-ui-storage:7.2.0")
     implementation("androidx.cardview:cardview:1.0.0")
@@ -65,6 +72,7 @@ dependencies {
     implementation ("com.google.http-client:google-http-client-jackson2:1.43.1")
     implementation ("com.google.auth:google-auth-library-oauth2-http:1.20.0")
     implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation ("com.github.yuyakaido:CardStackView:v2.3.4")
     implementation ("com.github.dhaval2404:imagepicker:2.1")
     implementation ("com.stripe:stripe-android:20.36.1")
     implementation ("com.github.yuyakaido:CardStackView:v2.3.4")
