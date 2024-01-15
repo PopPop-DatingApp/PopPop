@@ -31,4 +31,5 @@
         <item>Aquarius</item>
         <item>Pisces</item>
     </string-array>
+    <string name="age_range_format">%d - %d</string>
 </resources>

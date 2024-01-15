@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.poppop.CheckoutActivity;
+import com.example.poppop.EditProfileActivity;
 import com.example.poppop.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
@@ -31,6 +33,7 @@ public class ProfileFragment extends Fragment{
     UserModel userModel;
     TextView userName;
     Button logoutBtn;
+    ImageButton editProfileBtn;
     ImageView avatar;
 
     Button premiumButton;
@@ -65,6 +68,7 @@ public class ProfileFragment extends Fragment{
         userName = view.findViewById(R.id.profile_username);
         avatar = view.findViewById(R.id.profile_avatar);
         logoutBtn = view.findViewById(R.id.profile_logout);
+        editProfileBtn = view.findViewById(R.id.profile_editBtn);
         premiumButton = view.findViewById(R.id.premiereBtn);
         premiumButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CheckoutActivity.class);
@@ -80,6 +84,12 @@ public class ProfileFragment extends Fragment{
                  startActivity(intent);
                  getActivity().finish();
              });
+        });
+
+        editProfileBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            intent.putExtra("userModel",userModel);
+            startActivity(intent);
         });
         return view;
     }

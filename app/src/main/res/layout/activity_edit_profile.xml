@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditProfileActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_200"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/editProfile_backBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:background="@color/purple_200"
+            android:src="@drawable/icon_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+        <TextView
+            android:id="@+id/profile_appTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:text="Edit Profile"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/editProfile_backBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.545" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/profile_appTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/gray"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/aboutMe_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/aboutMeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="16dp"
+                    android:text="About Me"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/aboutMeInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="Enter your 'About Me' here..."
+                    android:background="@color/white"
+                    android:minHeight="48dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/interest_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/interestText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="16dp"
+                    android:text="Interests"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/interestBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/white"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:paddingStart="18dp"
+                    android:text="Interests"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/genderPref_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/genderPrefText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="16dp"
+                    android:text="I'm looking for"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/genderPrefBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/white"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:paddingStart="18dp"
+                    android:text="Everyone"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/agePref_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/agePrefText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="16dp"
+                        android:text="Age range"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/ageRangeTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="18dp"
+                        android:gravity="right|center"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"  />
+                </LinearLayout>
+
+                <com.google.android.material.slider.RangeSlider
+                    android:id="@+id/ageSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:stepSize="1"
+                    android:valueFrom="18"
+                    android:valueTo="60"
+                    app:labelBehavior="gone"
+                    app:values="@array/initial_slider_values"
+                    android:background="@color/white"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/distancePref_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/distancePrefText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="16dp"
+                    android:text="Maximum distance"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/distancePrefBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/white"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:paddingStart="18dp"
+                    android:text="5 km"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/basicInfo_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/basicInfoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="16dp"
+                    android:text="Basic Info"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/nameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Name"
+
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"/>
+
+                    <!-- Value TextView -->
+                    <TextView
+                        android:id="@+id/nameValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="16sp"/>
+
+                    <!-- Edit ImageButton -->
+                    <ImageButton
+                        android:id="@+id/editNameBtn"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/icon_next"
+                        android:contentDescription="Edit"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/ageTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Age"
+
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"/>
+
+                    <!-- Value TextView -->
+                    <TextView
+                        android:id="@+id/ageValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="16sp"/>
+
+                    <!-- Edit ImageButton -->
+                    <ImageButton
+                        android:id="@+id/editAgeBtn"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/icon_next"
+                        android:contentDescription="Edit"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/genderTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Gender"
+
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"/>
+
+                    <!-- Value TextView -->
+                    <TextView
+                        android:id="@+id/genderValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="16sp"/>
+
+                    <!-- Edit ImageButton -->
+                    <ImageButton
+                        android:id="@+id/editGenderBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/icon_next"
+                        android:contentDescription="Edit"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/HoroSignTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Horoscope Sign"
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"/>
+
+                    <!-- Value TextView -->
+                    <TextView
+                        android:id="@+id/HoroSignValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="16sp"/>
+
+                    <!-- Edit ImageButton -->
+                    <ImageButton
+                        android:id="@+id/editHoroSignBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/icon_next"
+                        android:contentDescription="Edit"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/profile_saveBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="Save" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
