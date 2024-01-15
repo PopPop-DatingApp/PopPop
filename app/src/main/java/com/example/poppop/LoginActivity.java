@@ -45,20 +45,14 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(getString(R.string.default_web_client_id))
-//                .requestEmail()
-//                .build();
-//
-//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         loginBtn.setOnClickListener(this::buttonGoogleSignIn);
-
-        Button paymentBtn = findViewById(R.id.paymentBtn);
-        paymentBtn.setOnClickListener(view -> {
-            Intent intent = new Intent(LoginActivity.this, CheckoutActivity.class);
-            startActivityForResult(intent, 1);
-        });
     }
 
     @Override

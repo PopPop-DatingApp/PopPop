@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.poppop.CheckoutActivity;
 import com.example.poppop.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
@@ -31,6 +32,8 @@ public class ProfileFragment extends Fragment{
     TextView userName;
     Button logoutBtn;
     ImageView avatar;
+
+    Button premiumButton;
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -50,6 +53,8 @@ public class ProfileFragment extends Fragment{
             displayUserDetails(firebaseUser.getUid());
         }
 
+
+
     }
 
     @Override
@@ -60,6 +65,11 @@ public class ProfileFragment extends Fragment{
         userName = view.findViewById(R.id.profile_username);
         avatar = view.findViewById(R.id.profile_avatar);
         logoutBtn = view.findViewById(R.id.profile_logout);
+        premiumButton = view.findViewById(R.id.premiereBtn);
+        premiumButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), CheckoutActivity.class);
+            startActivity(intent);
+        });
         logoutBtn.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             // Optionally, sign out from Google as well

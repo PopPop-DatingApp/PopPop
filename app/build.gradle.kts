@@ -67,4 +67,5 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     implementation ("com.github.dhaval2404:imagepicker:2.1")
     implementation ("com.stripe:stripe-android:20.36.1")
+    implementation ("com.github.yuyakaido:CardStackView:v2.3.4")
 }
