@@ -5,9 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -23,16 +20,20 @@ import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.Utils.Utils;
 import com.google.android.material.slider.RangeSlider;
+import com.google.android.material.slider.Slider;
 
 public class EditProfileActivity extends AppCompatActivity {
     UserModel userModel;
     ImageButton backBtn;
-    TextView ageValue, genderValue, horoSignValue;
-    EditText nameValue;
+    AppCompatButton revertBtn, saveBtn;
+    TextView ageValue, genderValue, horoSignValue, interestValue;
+    EditText nameValue, aboutMeInput;
     TextView distancePrefValue, agePrefValue, genderPrefValue;
 
     LinearLayout nameBlock, ageBlock, genderBlock, horoSignBlock;
@@ -54,7 +55,14 @@ public class EditProfileActivity extends AppCompatActivity {
         genderBlock = findViewById(R.id.genderBlock);
         horoSignBlock = findViewById(R.id.horoSignBlock);
 
+        aboutMeInput = findViewById(R.id.aboutMeInput);
+        interestValue = findViewById(R.id.interestBlock);
+
+        distancePrefValue = findViewById(R.id.distancePrefValue);
         genderPrefValue = findViewById(R.id.genderPrefValue);
+
+        revertBtn = findViewById(R.id.profile_revertBtn);
+        saveBtn = findViewById(R.id.profile_saveBtn);
 
         nameBlock.setOnClickListener(v -> {
             nameValue.requestFocus();
@@ -80,6 +88,23 @@ public class EditProfileActivity extends AppCompatActivity {
             genderValue.setText(userModel.getGender() != null ? userModel.getGender() : "Empty");
             horoSignValue.setText(userModel.getHoroscopeSign() != null ? userModel.getHoroscopeSign() : "Empty");
 
+            if(userModel.getBio() != null)
+                aboutMeInput.setText(userModel.getBio());
+
+            if(userModel.getInterests() != null){
+                interestValue.setText(Utils.getTextInterest(userModel.getInterests()));
+            }else{
+                interestValue.setText("Add your interests");
+            }
+
+            setUpAgePicker();
+            setupHoroscopeSpinner();
+
+            genderPrefBlock = findViewById(R.id.genderPrefBlock);
+            genderPrefBlock.setOnClickListener(v -> showGenderPopupMenu(genderPrefBlock, true, genderPrefValue));
+            genderBlock.setOnClickListener(v -> showGenderPopupMenu(genderBlock, false, genderValue));
+
+            revertBtn.setOnClickListener(v -> convertChanges());
         } else {
             // Handle the case where "userModel" extra is not present
             Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show();
@@ -89,14 +114,6 @@ public class EditProfileActivity extends AppCompatActivity {
         backBtn.setOnClickListener(v -> {
             onBackPressed();
         });
-
-        setUpAgePicker();
-        setupHoroscopeSpinner();
-
-        genderPrefBlock = findViewById(R.id.genderPrefBlock);
-
-        genderPrefBlock.setOnClickListener(v -> showGenderPopupMenu(genderPrefBlock, true, genderPrefValue));
-        genderBlock.setOnClickListener(v -> showGenderPopupMenu(genderBlock, false, genderValue));
 
         RangeSlider ageSlider = findViewById(R.id.ageSlider);
         TextView ageRangeTextView = findViewById(R.id.ageRangeTextView);
@@ -122,6 +139,25 @@ public class EditProfileActivity extends AppCompatActivity {
 
             ageRangeTextView.setText(getString(R.string.age_range_format, minAge, maxAge));
         });
+
+        Slider distanceSlider = findViewById(R.id.distanceSlider);
+        // Set initial values
+        float initialDistanceValue = 2.0f;
+        distancePrefValue.setText(getString(R.string.distance_format, Math.round(initialDistanceValue)));
+        distanceSlider.setValue(initialDistanceValue);
+
+        // Add a listener to the Slider to update the TextView when the value changes
+        distanceSlider.addOnChangeListener((slider, value, fromUser) -> {
+            updateDistanceText(value);
+        });
+    }
+
+    private void updateDistanceText(float value) {
+        Drawable pinkCircleDrawable = createDrawableWithPadding(R.drawable.circle_pink, 8); // Adjust the padding as needed
+
+        // Set compound drawable to the right of the text with some padding
+        distancePrefValue.setCompoundDrawablesWithIntrinsicBounds(null, null, pinkCircleDrawable, null);
+        distancePrefValue.setText(getString(R.string.distance_format, Math.round(value)));
     }
 
     private void showGenderPopupMenu(View view, boolean includeEveryoneOption, TextView textView) {
@@ -271,5 +307,9 @@ public class EditProfileActivity extends AppCompatActivity {
                 // Do nothing here
             }
         });
+    }
+
+    private void convertChanges() {
+
     }
 }
