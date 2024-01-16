@@ -17,8 +17,10 @@ public class UserModel implements Parcelable {
     String userId, name, profile, gender, bio, fcmToken, horoscopeSign, photoUrl;
     Integer age, numOfImages;
     GeoPoint currentLocation;
-    Map<String, Boolean> interests;
-    List<String> liked_list, disliked_list, swiped_list;
+    List<String> liked_list;
+    List<String> disliked_list;
+    List<String> swiped_list;
+    List<String> interests;
     List<ImageModel> image_list;
     Boolean isPremium;
 
@@ -36,6 +38,7 @@ public class UserModel implements Parcelable {
             age = in.readInt();
         }
         liked_list = in.createStringArrayList();
+        interests = in.createStringArrayList();
         disliked_list = in.createStringArrayList();
         swiped_list = in.createStringArrayList();
         image_list = in.createTypedArrayList(ImageModel.CREATOR);
@@ -144,14 +147,12 @@ public class UserModel implements Parcelable {
         this.currentLocation = currentLocation;
     }
 
-    public Map<String, Boolean> getInterests() {
+    public List<String> getInterests() {
         return interests;
     }
-
-    public void setInterests(Map<String, Boolean> interests) {
+    public void setInterests(List<String> interests) {
         this.interests = interests;
     }
-
     public List<String> getLiked_list() {
         return liked_list;
     }
@@ -227,6 +228,7 @@ public class UserModel implements Parcelable {
             dest.writeInt(numOfImages);
         }
         dest.writeStringList(liked_list);
+        dest.writeStringList(interests);
         dest.writeStringList(disliked_list);
         dest.writeStringList(swiped_list);
         dest.writeTypedList(image_list);

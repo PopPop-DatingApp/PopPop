@@ -25,6 +25,7 @@
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
+
         <activity
             android:name=".UI_ForPages.swipingActivityUI"
             android:exported="false" />
@@ -32,8 +33,14 @@
             android:name=".UI_ForPages.UI_PersonalInformation"
             android:exported="false" />
         <activity
-            android:name=".boardingpages.hobbyBoarding"
-            android:exported="false" />
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".boardingpages.horoscopeBoarding"
             android:exported="false" />
@@ -41,14 +48,8 @@
             android:name=".boardingpages.boardingGender"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:name=".boardingpages.hobbyBoarding"
+            android:exported="false" />
         <activity
             android:name=".boardingpages.boardingAge"
             android:exported="false" /> <!-- <activity -->
@@ -71,8 +72,7 @@
             android:exported="false" />
         <activity
             android:name=".boardingpages.boardingName"
-            android:exported="false"/>
-
+            android:exported="false" />
 
 
         <service
