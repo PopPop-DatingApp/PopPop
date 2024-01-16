@@ -2,6 +2,7 @@ package com.example.poppop.Utils;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.poppop.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -24,6 +26,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        sendNotificationBroadcast();
         getFirebaseMessage(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
     }
 
@@ -47,6 +50,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+    private void sendNotificationBroadcast() {
+        Intent intent = new Intent("notification_received");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     private boolean hasNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
@@ -68,7 +76,3 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 }
-
-
-
-

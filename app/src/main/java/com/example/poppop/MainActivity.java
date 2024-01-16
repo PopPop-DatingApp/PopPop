@@ -4,28 +4,40 @@ package com.example.poppop;
 import static com.example.poppop.Utils.Utils.checkNotificationPermission;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.poppop.Fragments.ChatFragment;
 import com.example.poppop.Fragments.MainFragment;
 import com.example.poppop.Fragments.ProfileFragment;
+import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.Utils;
+import com.example.poppop.boardingpages.hobbyBoarding;
 import com.example.poppop.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
+    private boolean hasNotification = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +45,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        BroadcastReceiver notificationReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // Update the notification state
+                MenuItem chatMenuItem = binding.bottomNavigationView.getMenu().findItem(R.id.chat);
+                hasNotification = true; // or set it to whatever value you need
+                chatMenuItem.setIcon(R.drawable.menu_item_icon_with_circle);
+                Log.d("Messs", "Hello");
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(notificationReceiver, new IntentFilter("notification_received"));
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitAll().build();
@@ -51,6 +76,16 @@ public class MainActivity extends AppCompatActivity {
             binding.bottomNavigationView.setOnItemSelectedListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.chat) {
+                    // Update notification state
+                    hasNotification = false;
+                    // Set the menu item icon based on the notification state
+                    MenuItem chatMenuItem = binding.bottomNavigationView.getMenu().findItem(R.id.chat);
+                    if (hasNotification) {
+                        chatMenuItem.setIcon(R.drawable.menu_item_icon_with_circle);
+                    } else {
+                        chatMenuItem.setIcon(R.drawable.chat);
+                    }
+
                     replaceFragment(new ChatFragment(), new Bundle());
                 } else if (itemId == R.id.main) {
                     replaceFragment(new MainFragment(), new Bundle());
@@ -59,6 +94,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             });
+
+            FirestoreUserUtils.getUserModelByUid(FirebaseUtils.currentUserId())
+                    .addOnSuccessListener(FirestoreUserUtils::updateFCMTokenForUser)
+                    .addOnFailureListener(e -> {
+                        // Handle the failure case
+                        Log.e("Firestore", "Error retrieving UserModel: " + e.getMessage());
+                        finish();
+                    });
+
         }
 
         Utils.checkNotificationPermission(MainActivity.this, this);
