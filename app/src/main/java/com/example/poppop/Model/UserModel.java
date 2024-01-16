@@ -99,6 +99,12 @@ public class UserModel implements Parcelable {
         this.profile = profile;
     }
 
+    public UserModel(String name,int age, String photoUrl) {
+        this.age = age;
+        this.name = name;
+        this.photoUrl = photoUrl;
+    }
+
     public String getGender() {
         return gender;
     }

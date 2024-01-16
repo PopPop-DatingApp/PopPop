@@ -20,6 +20,16 @@
         android:theme="@style/Theme.PopPop"
         tools:targetApi="31">
         <activity
+            android:name=".TestActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".EditProfileActivity"
             android:exported="false" />
 
@@ -31,19 +41,13 @@
             android:value="true" />
 
         <activity
-            android:name=".UI_ForPages.swipingActivityUI"
-            android:exported="false" />
-        <activity
-            android:name=".UI_ForPages.UI_PersonalInformation"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false">
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".boardingpages.horoscopeBoarding"
@@ -77,7 +81,6 @@
         <activity
             android:name=".boardingpages.boardingName"
             android:exported="false" />
-
 
         <service
             android:name=".Utils.MyFirebaseMessagingService"
