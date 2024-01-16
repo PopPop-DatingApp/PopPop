@@ -1,13 +1,10 @@
 package com.example.poppop.Utils;
 
 
-import android.content.Intent;
 import android.util.Log;
 
-import com.example.poppop.MainActivity;
 import com.example.poppop.Model.ImageModel;
 import com.example.poppop.Model.UserModel;
-import com.example.poppop.boardingpages.hobbyBoarding;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;

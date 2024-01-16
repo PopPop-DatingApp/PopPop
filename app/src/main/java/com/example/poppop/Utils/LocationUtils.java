@@ -33,7 +33,6 @@ public class LocationUtils {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     2);
         }
-
     }
 
     public static void getCurrentLocation(Activity activity, Context context, GeoPointResultListener geoPointResultListener) {
