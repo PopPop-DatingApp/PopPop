@@ -284,8 +284,6 @@ import java.util.List;
 public class hobbyBoarding extends AppCompatActivity {
     private String userName, userGender, userHoro;
     private Integer userAge;
-    private UserModel newUser;
-
     private RecyclerView recyclerView;
     private InterestAdapter interestAdapter;
     private List<String> selectedInterests = new ArrayList<>();
@@ -313,6 +311,10 @@ public class hobbyBoarding extends AppCompatActivity {
                     selectedInterests.remove(interest);
                 }
                 interestAdapter.notifyDataSetChanged(); // Update the RecyclerView
+            }else{
+                if(selectedInterests.contains(interest)){
+                    selectedInterests.remove(interest);
+                }
             }
         }, selectedInterests);
         recyclerView.setAdapter(interestAdapter);
@@ -320,18 +322,16 @@ public class hobbyBoarding extends AppCompatActivity {
         save.setOnClickListener(v -> {
             FirestoreUserUtils.getUserModelByUid(FirebaseUtils.currentUserId())
                     .addOnSuccessListener(userModel -> {
-                        newUser = userModel;
-
-                        if (newUser != null) {
-                            newUser.setName(userName);
-                            newUser.setAge(userAge);
-                            newUser.setGender(userGender);
-                            newUser.setHoroscopeSign(userHoro);
+                        if (userModel != null) {
+                            userModel.setName(userName);
+                            userModel.setAge(userAge);
+                            userModel.setGender(userGender);
+                            userModel.setHoroscopeSign(userHoro);
 
                             // Set the selected interests in the user object
-                            newUser.setInterests(selectedInterests);
+                            userModel.setInterests(selectedInterests);
 
-                            FirestoreUserUtils.updateUserModel(newUser)
+                            FirestoreUserUtils.updateUserModel(userModel)
                                     .addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
                                             startActivity(new Intent(hobbyBoarding.this, MainActivity.class));
@@ -400,6 +400,9 @@ public class hobbyBoarding extends AppCompatActivity {
                 if (selectedInterests.size() < 5) {
                     onInterestClickListener.onInterestClick(interest);
                     holder.toggleSelection(selectedInterests.contains(interest));
+                } else{
+                    onInterestClickListener.onInterestClick(interest);
+                    holder.toggleSelection(false);
                 }
             });
         }
