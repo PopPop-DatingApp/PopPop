@@ -31,4 +31,6 @@
         <item>Aquarius</item>
         <item>Pisces</item>
     </string-array>
+    <string name="age_range_format">%d - %d</string>
+    <string name="distance_format">%d km</string>
 </resources>

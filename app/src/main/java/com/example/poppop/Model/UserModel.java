@@ -177,6 +177,14 @@ public class UserModel implements Parcelable {
         this.swiped_list = swiped_list;
     }
 
+    public List<String> getInterests() {
+        return interests;
+    }
+
+    public void setInterests(List<String> interests) {
+        this.interests = interests;
+    }
+
     public String getUserId() {
         return userId;
     }

@@ -28,6 +28,14 @@ public class Utils {
         );
     }
 
+    public static String getTextInterest(List<String> interestList){
+        StringBuilder interests = new StringBuilder();
+        for(int i = 0; i < interestList.size(); i++) {
+            interests.append(interestList.get(i)).append(", ");
+        }
+        return interests.substring(0, interests.length() - 2);
+    }
+
     public static void setProfilePic(Context context, String imageUri, ImageView imageView){
         Glide.with(context).load(imageUri).apply(RequestOptions.circleCropTransform()).into(imageView);
     }
