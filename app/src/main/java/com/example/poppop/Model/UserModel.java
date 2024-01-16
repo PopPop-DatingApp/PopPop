@@ -147,12 +147,6 @@ public class UserModel implements Parcelable {
         this.currentLocation = currentLocation;
     }
 
-    public List<String> getInterests() {
-        return interests;
-    }
-    public void setInterests(List<String> interests) {
-        this.interests = interests;
-    }
     public List<String> getLiked_list() {
         return liked_list;
     }
