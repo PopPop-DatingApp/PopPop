@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -24,7 +25,10 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.Utils;
+import com.example.poppop.boardingpages.hobbyBoarding;
 import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.slider.Slider;
 
@@ -83,28 +87,7 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent getIntent = getIntent();
         userModel = getIntent.getParcelableExtra("userModel");
         if (userModel != null) {
-            nameValue.setText(userModel.getName());
-            ageValue.setText(userModel.getAge() != null ? userModel.getAge().toString() : "Empty");
-            genderValue.setText(userModel.getGender() != null ? userModel.getGender() : "Empty");
-            horoSignValue.setText(userModel.getHoroscopeSign() != null ? userModel.getHoroscopeSign() : "Empty");
-
-            if(userModel.getBio() != null)
-                aboutMeInput.setText(userModel.getBio());
-
-            if(userModel.getInterests() != null){
-                interestValue.setText(Utils.getTextInterest(userModel.getInterests()));
-            }else{
-                interestValue.setText("Add your interests");
-            }
-
-            setUpAgePicker();
-            setupHoroscopeSpinner();
-
-            genderPrefBlock = findViewById(R.id.genderPrefBlock);
-            genderPrefBlock.setOnClickListener(v -> showGenderPopupMenu(genderPrefBlock, true, genderPrefValue));
-            genderBlock.setOnClickListener(v -> showGenderPopupMenu(genderBlock, false, genderValue));
-
-            revertBtn.setOnClickListener(v -> convertChanges());
+            populateUserData();
         } else {
             // Handle the case where "userModel" extra is not present
             Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show();
@@ -114,42 +97,33 @@ public class EditProfileActivity extends AppCompatActivity {
         backBtn.setOnClickListener(v -> {
             onBackPressed();
         });
+    }
 
-        RangeSlider ageSlider = findViewById(R.id.ageSlider);
-        TextView ageRangeTextView = findViewById(R.id.ageRangeTextView);
+    private void populateUserData() {
+        nameValue.setText(userModel.getName());
+        ageValue.setText(userModel.getAge() != null ? userModel.getAge().toString() : "Empty");
+        genderValue.setText(userModel.getGender() != null ? userModel.getGender() : "Empty");
+        horoSignValue.setText(userModel.getHoroscopeSign() != null ? userModel.getHoroscopeSign() : "Empty");
 
-        // Set initial values
-        float initialMinValue = 18.0f;
-        float initialMaxValue = 19.0f;
-        ageRangeTextView.setText(getString(R.string.age_range_format, Math.round(initialMinValue), Math.round(initialMaxValue)));
-        ageSlider.setValues(initialMinValue, initialMaxValue);
+        if(userModel.getBio() != null)
+            aboutMeInput.setText(userModel.getBio());
 
-        ageSlider.addOnChangeListener((slider, value, fromUser) -> {
-            float minValue = slider.getValues().get(0);
-            float maxValue = slider.getValues().get(1);
+        if(userModel.getInterests() != null){
+            interestValue.setText(Utils.getTextInterest(userModel.getInterests()));
+        }else{
+            interestValue.setText("Add your interests");
+        }
 
-            // Convert float values to integers
-            int minAge = Math.round(minValue);
-            int maxAge = Math.round(maxValue);
+        setUpAgePicker();
+        setupHoroscopeSpinner();
+        setUpSliders();
 
-            Drawable pinkCircleDrawable = createDrawableWithPadding(R.drawable.circle_pink, 8); // Adjust the padding as needed
+        genderPrefBlock = findViewById(R.id.genderPrefBlock);
+        genderPrefBlock.setOnClickListener(v -> showGenderPopupMenu(genderPrefBlock, true, genderPrefValue));
+        genderBlock.setOnClickListener(v -> showGenderPopupMenu(genderBlock, false, genderValue));
 
-            // Set compound drawable to the right of the text with some padding
-            ageRangeTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, pinkCircleDrawable, null);
-
-            ageRangeTextView.setText(getString(R.string.age_range_format, minAge, maxAge));
-        });
-
-        Slider distanceSlider = findViewById(R.id.distanceSlider);
-        // Set initial values
-        float initialDistanceValue = 2.0f;
-        distancePrefValue.setText(getString(R.string.distance_format, Math.round(initialDistanceValue)));
-        distanceSlider.setValue(initialDistanceValue);
-
-        // Add a listener to the Slider to update the TextView when the value changes
-        distanceSlider.addOnChangeListener((slider, value, fromUser) -> {
-            updateDistanceText(value);
-        });
+        revertBtn.setOnClickListener(v -> convertChanges());
+        saveBtn.setOnClickListener(v -> saveChanges());
     }
 
     private void updateDistanceText(float value) {
@@ -224,6 +198,43 @@ public class EditProfileActivity extends AppCompatActivity {
         return layerDrawable;
     }
 
+    private void setUpSliders(){
+        RangeSlider ageSlider = findViewById(R.id.ageSlider);
+        TextView ageRangeTextView = findViewById(R.id.ageRangeTextView);
+
+        // Set initial values
+        float initialMinValue = 18.0f;
+        float initialMaxValue = 19.0f;
+        ageRangeTextView.setText(getString(R.string.age_range_format, Math.round(initialMinValue), Math.round(initialMaxValue)));
+        ageSlider.setValues(initialMinValue, initialMaxValue);
+
+        ageSlider.addOnChangeListener((slider, value, fromUser) -> {
+            float minValue = slider.getValues().get(0);
+            float maxValue = slider.getValues().get(1);
+
+            // Convert float values to integers
+            int minAge = Math.round(minValue);
+            int maxAge = Math.round(maxValue);
+
+            Drawable pinkCircleDrawable = createDrawableWithPadding(R.drawable.circle_pink, 8); // Adjust the padding as needed
+
+            // Set compound drawable to the right of the text with some padding
+            ageRangeTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, pinkCircleDrawable, null);
+
+            ageRangeTextView.setText(getString(R.string.age_range_format, minAge, maxAge));
+        });
+
+        Slider distanceSlider = findViewById(R.id.distanceSlider);
+        // Set initial values
+        float initialDistanceValue = 2.0f;
+        distancePrefValue.setText(getString(R.string.distance_format, Math.round(initialDistanceValue)));
+        distanceSlider.setValue(initialDistanceValue);
+
+        // Add a listener to the Slider to update the TextView when the value changes
+        distanceSlider.addOnChangeListener((slider, value, fromUser) -> {
+            updateDistanceText(value);
+        });
+    }
     private void setUpAgePicker(){
         final NumberPicker ageNumberPicker = findViewById(R.id.ageNumberPicker);
         String initialValueString = ageValue.getText().toString();
@@ -240,6 +251,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 if (ageValue.getVisibility() == View.VISIBLE) {
                     ageValue.setVisibility(View.GONE);
                     ageNumberPicker.setVisibility(View.VISIBLE);
+                    ageNumberPicker.setValue(userModel.getAge());
                 } else {
                     ageValue.setVisibility(View.VISIBLE);
                     ageNumberPicker.setVisibility(View.GONE);
@@ -307,6 +319,50 @@ public class EditProfileActivity extends AppCompatActivity {
                 // Do nothing here
             }
         });
+    }
+
+    private void saveChanges() {
+        FirestoreUserUtils.getUserModelByUid(FirebaseUtils.currentUserId())
+                .addOnSuccessListener(userModel -> {
+                    // This method is called when UserModel is successfully retrieved
+//                    newUser = userModel;
+
+                    if (userModel != null) {
+                        userModel.setName(nameValue.getText().toString());
+                        try {
+                            userModel.setAge(Integer.parseInt(ageValue.getText().toString()));
+                        } catch (NumberFormatException e) {
+                            // Handle the case where the age input is not a valid integer
+                            e.printStackTrace(); // or show an error message
+                        }
+                        userModel.setGender(genderValue.getText().toString());
+                        userModel.setHoroscopeSign(horoSignValue.getText().toString());
+
+                        FirestoreUserUtils.updateUserModel(userModel)
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        // If the update is successful, start the new activity
+                                        Toast.makeText(this, "Update successfully", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(EditProfileActivity.this, MainActivity.class));
+                                    } else {
+                                        Toast.makeText(this, "Fail to update", Toast.LENGTH_SHORT).show();
+                                        // Handle errors here
+                                        Exception exception = task.getException();
+                                        if (exception != null) {
+                                            exception.printStackTrace();
+                                        }
+                                    }
+                                });
+                    } else {
+                        Log.e("ChatActivity", "otherUser is null");
+                        finish();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the failure case
+                    Log.e("Firestore", "Error retrieving UserModel: " + e.getMessage());
+                    finish();
+                });
     }
 
     private void convertChanges() {
