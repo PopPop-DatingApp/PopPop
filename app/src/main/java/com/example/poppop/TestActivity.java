@@ -80,49 +80,6 @@ public class TestActivity extends AppCompatActivity implements CardStackListener
         Log.d("CardStackView", "onCardDisappeared: (" + position + ") " + textView.getText());
     }
 
-//    private void setupNavigation() {
-//        // Toolbar
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        // DrawerLayout
-//        drawerLayout = findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
-//                this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
-//        actionBarDrawerToggle.syncState();
-//        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-//
-//        // NavigationView
-//        NavigationView navigationView = findViewById(R.id.navigation_view);
-//        navigationView.setNavigationItemSelectedListener(menuItem -> {
-//            switch (menuItem.getItemId()) {
-//                case R.id.reload:
-//                    reload();
-//                    break;
-//                case R.id.add_spot_to_first:
-//                    addFirst(1);
-//                    break;
-//                case R.id.add_spot_to_last:
-//                    addLast(1);
-//                    break;
-//                case R.id.remove_spot_from_first:
-//                    removeFirst(1);
-//                    break;
-//                case R.id.remove_spot_from_last:
-//                    removeLast(1);
-//                    break;
-//                case R.id.replace_first_spot:
-//                    replace();
-//                    break;
-//                case R.id.swap_first_for_last:
-//                    swap();
-//                    break;
-//            }
-//            drawerLayout.closeDrawers();
-//            return true;
-//        });
-//    }
-
     private void setupCardStackView() {
         initialize();
     }

@@ -2,6 +2,7 @@ package com.example.poppop.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -40,12 +41,41 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         Glide.with(holder.image)
                 .load(userModel.getImage_list2().get(i))
                 .into(holder.image);
-        holder.itemView.setOnClickListener(v -> {
-            i = i + 1;
-            Glide.with(holder.image)
-                    .load(userModel.getImage_list2().get(i))
-                    .into(holder.image);
-            Toast.makeText(v.getContext(), userModel.getName(), Toast.LENGTH_SHORT).show();
+//        holder.itemView.setOnClickListener(v -> {
+//            i = i + 1;
+//            Glide.with(holder.image)
+//                    .load(userModel.getImage_list2().get(i))
+//                    .into(holder.image);
+//            Toast.makeText(v.getContext(), userModel.getName(), Toast.LENGTH_SHORT).show();
+//        });
+
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                float x = event.getX();
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Determine whether the click is on the left or right side
+                        if (x < v.getWidth() / 4) {
+                            if(i != 0){
+                                i--;
+                                Glide.with(holder.image)
+                                        .load(userModel.getImage_list2().get(i))
+                                        .into(holder.image);
+                            }
+                        } else if (x > v.getWidth() * 0.75) {
+                            if(i != userModel.getImage_list2().size() -1){
+                                i++;
+                                Glide.with(holder.image)
+                                        .load(userModel.getImage_list2().get(i))
+                                        .into(holder.image);
+                            }
+                        }
+                        return true;
+                }
+                return false;
+            }
         });
     }
 
