@@ -18,6 +18,8 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
 
     private List<UserModel> userModelList;
 
+    private int i = 0;
+
     public CardStackAdapter(List<UserModel> userModelList) {
         this.userModelList = userModelList;
     }
@@ -36,9 +38,13 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         holder.name.setText(userModel.getName());
         holder.age.setText(String.valueOf(userModel.getAge()));
         Glide.with(holder.image)
-                .load(userModel.getPhotoUrl())
+                .load(userModel.getImage_list2().get(i))
                 .into(holder.image);
         holder.itemView.setOnClickListener(v -> {
+            i = i + 1;
+            Glide.with(holder.image)
+                    .load(userModel.getImage_list2().get(i))
+                    .into(holder.image);
             Toast.makeText(v.getContext(), userModel.getName(), Toast.LENGTH_SHORT).show();
         });
     }

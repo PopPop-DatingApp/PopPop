@@ -22,6 +22,8 @@ public class UserModel implements Parcelable {
     List<String> swiped_list;
     List<String> interests;
     List<ImageModel> image_list;
+
+    List<String> image_list2;
     Boolean isPremium;
 
     protected UserModel(Parcel in) {
@@ -99,10 +101,25 @@ public class UserModel implements Parcelable {
         this.profile = profile;
     }
 
+
     public UserModel(String name,int age, String photoUrl) {
         this.age = age;
         this.name = name;
         this.photoUrl = photoUrl;
+    }
+
+    public UserModel(String name,int age, List<String> photoUrl) {
+        this.age = age;
+        this.name = name;
+        this.image_list2 = photoUrl;
+    }
+
+    public List<String> getImage_list2() {
+        return image_list2;
+    }
+
+    public void setImage_list2(List<String> image_list2) {
+        this.image_list2 = image_list2;
     }
 
     public String getGender() {
