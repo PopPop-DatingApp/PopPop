@@ -37,12 +37,12 @@ public class LoginActivity extends AppCompatActivity {
 
     TextView usernameRegisterText;
     TextView passwordRegisterText;
-    Button registerBtn;
+    Button loginBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_ui); // Updated layout resource
+        setContentView(R.layout.activity_login); // Updated layout resource
         PaymentConfiguration.init(
                 getApplicationContext(),
                 "pk_test_51OXKSzEP1gGhSTU9IBjjvSKHnLbvHLfP7VtvYjE6MA1KEVaWU9jvbTgFCdoHe85D2ddpHGi63E7mcjtTuUuG3EN500TXV8w8PW"
@@ -51,8 +51,8 @@ public class LoginActivity extends AppCompatActivity {
 
         usernameRegisterText= findViewById(R.id.usernameRegisterText);
         passwordRegisterText = findViewById(R.id.passwordRegisterText);
-        registerBtn = findViewById(R.id.registerBtn);
-        registerBtn.setOnClickListener(v->{
+        loginBtn = findViewById(R.id.loginBtn);
+        loginBtn.setOnClickListener(v->{
             String username = usernameRegisterText.getText().toString();
             String password = passwordRegisterText.getText().toString();
             mAuth.signInWithEmailAndPassword(username, password)
