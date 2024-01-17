@@ -15,15 +15,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.poppop.Fragments.ChatFragment;
 import com.example.poppop.Fragments.MainFragment;
 import com.example.poppop.Fragments.ProfileFragment;
+import com.example.poppop.Model.UserModel;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.LocationUtils;
 import com.example.poppop.Utils.Utils;
+import com.example.poppop.ViewModel.UsersViewModel;
 import com.example.poppop.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -53,9 +56,6 @@ public class MainActivity extends AppCompatActivity implements LocationUtils.Geo
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(notificationReceiver, new IntentFilter("notification_received"));
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                .permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements LocationUtils.Geo
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

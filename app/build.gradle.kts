@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.poppop"
-        minSdk = 24
+        minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -75,5 +75,5 @@ dependencies {
     implementation ("com.github.yuyakaido:CardStackView:v2.3.4")
     implementation ("com.github.dhaval2404:imagepicker:2.1")
     implementation ("com.stripe:stripe-android:20.36.1")
-    implementation ("com.github.yuyakaido:CardStackView:v2.3.4")
+//    implementation ("com.github.yuyakaido:CardStackView:v2.3.4")
 }

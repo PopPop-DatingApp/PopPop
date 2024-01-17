@@ -1,21 +1,14 @@
 package com.example.poppop.Utils;
 
-import android.util.Log;
-
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +20,11 @@ public class FirebaseUtils {
     public static DocumentReference getUserReference(String userId){
         return FirebaseFirestore.getInstance().collection("users").document(userId);
     }
+
+    public static CollectionReference getAllUsersCollectionReference(){
+        return FirebaseFirestore.getInstance().collection("users");
+    }
+
     public static CollectionReference getAllInterestsCollectionReference(){
         return FirebaseFirestore.getInstance().collection("interests");
     }

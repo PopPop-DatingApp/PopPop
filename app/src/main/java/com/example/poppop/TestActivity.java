@@ -1,68 +1,48 @@
-package com.example.poppop.Fragments;
+package com.example.poppop;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.example.poppop.Adapters.CardStackAdapter;
 import com.example.poppop.Adapters.UserModelDiffCallback;
 import com.example.poppop.Model.UserModel;
-import com.example.poppop.R;
-import com.example.poppop.Utils.FirebaseUtils;
-import com.example.poppop.ViewModel.UsersViewModel;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
 import com.example.poppop.cardstackview.CardStackView;
 import com.example.poppop.cardstackview.Direction;
 import com.example.poppop.cardstackview.Duration;
 import com.example.poppop.cardstackview.RewindAnimationSetting;
+import com.example.poppop.cardstackview.StackFrom;
 import com.example.poppop.cardstackview.SwipeAnimationSetting;
+import com.example.poppop.cardstackview.SwipeableMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainFragment extends Fragment implements CardStackListener {
+public class TestActivity extends AppCompatActivity implements CardStackListener {
 
-    private UsersViewModel usersViewModel;
     private CardStackView cardStackView;
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        setupCardStackView(view);
-        setupButton(view);
-        return view;
-    }
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_test);
+        Log.d("CardStackView", "create");
 
-        // Initialize the ViewModel using ViewModelProvider with AndroidViewModelFactory
-        usersViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
-                .get(UsersViewModel.class);
-
-        // Observe the LiveData in the ViewModel
-        usersViewModel.getUserList().observe(getViewLifecycleOwner(), userList -> {
-            if (userList != null) {
-                // Update UI or adapter with the new user list
-                adapter.setUserModels(userList);
-                adapter.notifyDataSetChanged();
-            }
-        });
+//        setupNavigation();
+        setupCardStackView();
+        setupButton();
     }
 
     @Override
@@ -73,8 +53,6 @@ public class MainFragment extends Fragment implements CardStackListener {
     @Override
     public void onCardSwiped(Direction direction) {
         Log.d("CardStackView", "onCardSwiped: p = " + manager.getTopPosition() + ", d = " + direction);
-        usersViewModel.deleteTopUser();
-        Toast.makeText(requireContext(), "Swiped", Toast.LENGTH_SHORT).show();
         if (manager.getTopPosition() == adapter.getItemCount() - 5) {
             paginate();
         }
@@ -102,14 +80,13 @@ public class MainFragment extends Fragment implements CardStackListener {
         Log.d("CardStackView", "onCardDisappeared: (" + position + ") " + textView.getText());
     }
 
-    private void setupCardStackView(View view) {
-        initialize(view);
+    private void setupCardStackView() {
+        initialize();
     }
 
-    private void setupButton(View view) {
-        View skip = view.findViewById(R.id.skip_button);
+    private void setupButton() {
+        View skip = findViewById(R.id.skip_button);
         skip.setOnClickListener(v -> {
-            // Swipe left logic
             SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
                     .setDirection(Direction.Left)
                     .setDuration(Duration.Normal.duration)
@@ -119,7 +96,7 @@ public class MainFragment extends Fragment implements CardStackListener {
             cardStackView.swipe();
         });
 
-        View rewind = view.findViewById(R.id.rewind_button);
+        View rewind = findViewById(R.id.rewind_button);
         rewind.setOnClickListener(v -> {
             RewindAnimationSetting setting = new RewindAnimationSetting.Builder()
                     .setDirection(Direction.Bottom)
@@ -130,7 +107,7 @@ public class MainFragment extends Fragment implements CardStackListener {
             cardStackView.rewind();
         });
 
-        View like = view.findViewById(R.id.like_button);
+        View like = findViewById(R.id.like_button);
         like.setOnClickListener(v -> {
             SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
                     .setDirection(Direction.Right)
@@ -142,11 +119,21 @@ public class MainFragment extends Fragment implements CardStackListener {
         });
     }
 
-    private void initialize(View view) {
-        manager = new CardStackLayoutManager(requireContext(), this);
-        // Rest of the initialization code...
-
-        cardStackView = view.findViewById(R.id.card_stack_view);
+    private void initialize() {
+        Log.e("CardStackView", "CardStackLayoutManager is null");
+        manager = new CardStackLayoutManager(this, this);
+        manager.setStackFrom(StackFrom.None);
+        manager.setVisibleCount(3);
+        manager.setTranslationInterval(8.0f);
+        manager.setScaleInterval(0.95f);
+        manager.setSwipeThreshold(0.3f);
+        manager.setMaxDegree(20.0f);
+        manager.setDirections(Direction.HORIZONTAL);
+        manager.setCanScrollHorizontal(true);
+        manager.setCanScrollVertical(true);
+        manager.setSwipeableMethod(SwipeableMethod.AutomaticAndManual);
+        manager.setOverlayInterpolator(new LinearInterpolator());
+        cardStackView = findViewById(R.id.card_stack_view);
         if (manager != null) {
             cardStackView.setLayoutManager(manager);
         } else {
@@ -170,6 +157,7 @@ public class MainFragment extends Fragment implements CardStackListener {
             result.dispatchUpdatesTo(adapter);
         }
     }
+
 
     private UserModel createUserModel() {
         return new UserModel(
@@ -199,5 +187,5 @@ public class MainFragment extends Fragment implements CardStackListener {
         }
         return userModels;
     }
-
 }
+
