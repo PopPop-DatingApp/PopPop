@@ -173,9 +173,9 @@ public class TestActivity extends AppCompatActivity implements CardStackListener
         images.add("https://source.unsplash.com/NYyCqdBOKwc/600x800");
         images.add("https://source.unsplash.com/buF62ewDLcQ/600x800");
         List<UserModel> userModels = new ArrayList<>();
-        userModels.add(new UserModel("John Doe", 25, images));
-        userModels.add(new UserModel("Jane Smith", 30, images));
-        userModels.add(new UserModel("Bob Johnson", 28, images));
+        userModels.add(new UserModel("John Doe", 25));
+        userModels.add(new UserModel("Jane Smith", 30));
+        userModels.add(new UserModel("Bob Johnson", 28));
         // Add more users as needed
         return userModels;
     }

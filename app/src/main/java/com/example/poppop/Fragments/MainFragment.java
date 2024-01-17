@@ -20,7 +20,6 @@ import com.example.poppop.Adapters.CardStackAdapter;
 import com.example.poppop.Adapters.UserModelDiffCallback;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
-import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.ViewModel.UsersViewModel;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
@@ -185,9 +184,9 @@ public class MainFragment extends Fragment implements CardStackListener {
         images.add("https://source.unsplash.com/NYyCqdBOKwc/600x800");
         images.add("https://source.unsplash.com/buF62ewDLcQ/600x800");
         List<UserModel> userModels = new ArrayList<>();
-        userModels.add(new UserModel("John Doe", 25, images));
-        userModels.add(new UserModel("Jane Smith", 30, images));
-        userModels.add(new UserModel("Bob Johnson", 28, images));
+        userModels.add(new UserModel("John Doe", 25));
+        userModels.add(new UserModel("Jane Smith", 30));
+        userModels.add(new UserModel("Bob Johnson", 28));
         // Add more users as needed
         return userModels;
     }

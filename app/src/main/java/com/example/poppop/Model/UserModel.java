@@ -2,16 +2,13 @@ package com.example.poppop.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class UserModel implements Parcelable {
     String userId, name, profile, gender, bio, fcmToken, horoscopeSign, photoUrl;
@@ -23,8 +20,36 @@ public class UserModel implements Parcelable {
     List<String> interests;
     List<ImageModel> image_list;
 
-    List<String> image_list2;
+    public Integer getMaxDistPref() {
+        return maxDistPref;
+    }
+
+    public void setMaxDistPref(Integer maxDistPref) {
+        this.maxDistPref = maxDistPref;
+    }
+
+    Integer maxDistPref;
+
+    public String getGenderPref() {
+        return genderPref;
+    }
+
+    public void setGenderPref(String genderPref) {
+        this.genderPref = genderPref;
+    }
+
+    String genderPref;
     Boolean isPremium;
+
+    public List<Integer> getAgeRangePref() {
+        return ageRangePref;
+    }
+
+    public void setAgeRangePref(List<Integer> ageRangePref) {
+        this.ageRangePref = ageRangePref;
+    }
+
+    List<Integer> ageRangePref;
 
     protected UserModel(Parcel in) {
         userId = in.readString();
@@ -39,6 +64,16 @@ public class UserModel implements Parcelable {
         } else {
             age = in.readInt();
         }
+        if (in.readByte() == 0) {
+            maxDistPref = null;
+        } else {
+            maxDistPref = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            numOfImages = null;
+        } else {
+            numOfImages = in.readInt();
+        }
         liked_list = in.createStringArrayList();
         interests = in.createStringArrayList();
         disliked_list = in.createStringArrayList();
@@ -46,6 +81,16 @@ public class UserModel implements Parcelable {
         image_list = in.createTypedArrayList(ImageModel.CREATOR);
         byte tmpIsPremium = in.readByte();
         isPremium = tmpIsPremium == 0 ? null : tmpIsPremium == 1;
+        genderPref = in.readString();
+        ageRangePref = new ArrayList<>();
+        int ageRangePrefSize = in.readInt();
+        if (ageRangePrefSize > 0) {
+            ageRangePref = new ArrayList<>();
+            in.readList(ageRangePref, Integer.class.getClassLoader());
+        } else {
+            ageRangePref = null;
+        }
+
     }
 
     public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
@@ -108,18 +153,9 @@ public class UserModel implements Parcelable {
         this.photoUrl = photoUrl;
     }
 
-    public UserModel(String name,int age, List<String> photoUrl) {
+    public UserModel(String name,int age) {
         this.age = age;
         this.name = name;
-        this.image_list2 = photoUrl;
-    }
-
-    public List<String> getImage_list2() {
-        return image_list2;
-    }
-
-    public void setImage_list2(List<String> image_list2) {
-        this.image_list2 = image_list2;
     }
 
     public String getGender() {
@@ -246,6 +282,12 @@ public class UserModel implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeInt(age);
         }
+        if (maxDistPref == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(maxDistPref);
+        }
         if (numOfImages == null) {
             dest.writeByte((byte) 0);
         } else {
@@ -258,5 +300,14 @@ public class UserModel implements Parcelable {
         dest.writeStringList(swiped_list);
         dest.writeTypedList(image_list);
         dest.writeByte((byte) (isPremium == null ? 0 : isPremium ? 1 : 2));
+        dest.writeString(genderPref);
+
+        if (ageRangePref == null) {
+            dest.writeInt(0); // Indicate that the list is null
+        } else {
+            dest.writeInt(ageRangePref.size()); // Write the size of the list
+            dest.writeArray(ageRangePref.toArray());
+        }
+
     }
 }

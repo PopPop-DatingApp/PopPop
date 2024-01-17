@@ -28,9 +28,11 @@ import com.example.poppop.Model.UserModel;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.Utils;
-import com.example.poppop.boardingpages.hobbyBoarding;
 import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.slider.Slider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditProfileActivity extends AppCompatActivity {
     UserModel userModel;
@@ -87,6 +89,7 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent getIntent = getIntent();
         userModel = getIntent.getParcelableExtra("userModel");
         if (userModel != null) {
+            Log.d("Edit Profile", userModel.getName());
             populateUserData();
         } else {
             // Handle the case where "userModel" extra is not present
@@ -119,10 +122,14 @@ public class EditProfileActivity extends AppCompatActivity {
         setUpSliders();
 
         genderPrefBlock = findViewById(R.id.genderPrefBlock);
+        if(userModel.getGenderPref() != null)
+            genderPrefValue.setText(userModel.getGenderPref());
+        else genderPrefValue.setText("Everyone");
+
         genderPrefBlock.setOnClickListener(v -> showGenderPopupMenu(genderPrefBlock, true, genderPrefValue));
         genderBlock.setOnClickListener(v -> showGenderPopupMenu(genderBlock, false, genderValue));
 
-        revertBtn.setOnClickListener(v -> convertChanges());
+        revertBtn.setOnClickListener(v -> cancel());
         saveBtn.setOnClickListener(v -> saveChanges());
     }
 
@@ -200,14 +207,20 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void setUpSliders(){
         RangeSlider ageSlider = findViewById(R.id.ageSlider);
-        TextView ageRangeTextView = findViewById(R.id.ageRangeTextView);
+        agePrefValue = findViewById(R.id.ageRangeTextView);
 
         // Set initial values
-        float initialMinValue = 18.0f;
-        float initialMaxValue = 19.0f;
-        ageRangeTextView.setText(getString(R.string.age_range_format, Math.round(initialMinValue), Math.round(initialMaxValue)));
-        ageSlider.setValues(initialMinValue, initialMaxValue);
-
+        if(userModel.getAgeRangePref() != null && userModel.getAgeRangePref().size() == 2){
+            List<Integer> initialValue = userModel.getAgeRangePref();
+            agePrefValue.setText(getString(R.string.age_range_format, Math.round(initialValue.get(0)), Math.round(initialValue.get(1))));
+            ageSlider.setValues(initialValue.get(0).floatValue(), initialValue.get(1).floatValue());
+        }
+        else{
+            float initialMinValue = 18.0f;
+            float initialMaxValue = 19.0f;
+            agePrefValue.setText(getString(R.string.age_range_format, Math.round(initialMinValue), Math.round(initialMaxValue)));
+            ageSlider.setValues(initialMinValue, initialMaxValue);
+        }
         ageSlider.addOnChangeListener((slider, value, fromUser) -> {
             float minValue = slider.getValues().get(0);
             float maxValue = slider.getValues().get(1);
@@ -219,16 +232,24 @@ public class EditProfileActivity extends AppCompatActivity {
             Drawable pinkCircleDrawable = createDrawableWithPadding(R.drawable.circle_pink, 8); // Adjust the padding as needed
 
             // Set compound drawable to the right of the text with some padding
-            ageRangeTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, pinkCircleDrawable, null);
+            agePrefValue.setCompoundDrawablesWithIntrinsicBounds(null, null, pinkCircleDrawable, null);
 
-            ageRangeTextView.setText(getString(R.string.age_range_format, minAge, maxAge));
+            agePrefValue.setText(getString(R.string.age_range_format, minAge, maxAge));
         });
 
         Slider distanceSlider = findViewById(R.id.distanceSlider);
         // Set initial values
-        float initialDistanceValue = 2.0f;
-        distancePrefValue.setText(getString(R.string.distance_format, Math.round(initialDistanceValue)));
-        distanceSlider.setValue(initialDistanceValue);
+        if(userModel.getMaxDistPref() != null) {
+            float initialDistanceValue = userModel.getMaxDistPref().floatValue();
+            distancePrefValue.setText(getString(R.string.distance_format, Math.round(initialDistanceValue)));
+            distanceSlider.setValue(initialDistanceValue);
+        }
+        else{
+            float initialDistanceValue = 2.0f;
+            distancePrefValue.setText(getString(R.string.distance_format, Math.round(initialDistanceValue)));
+            distanceSlider.setValue(initialDistanceValue);
+        }
+
 
         // Add a listener to the Slider to update the TextView when the value changes
         distanceSlider.addOnChangeListener((slider, value, fromUser) -> {
@@ -328,6 +349,7 @@ public class EditProfileActivity extends AppCompatActivity {
 //                    newUser = userModel;
 
                     if (userModel != null) {
+                        userModel.setBio(aboutMeInput.getText().toString());
                         userModel.setName(nameValue.getText().toString());
                         try {
                             userModel.setAge(Integer.parseInt(ageValue.getText().toString()));
@@ -337,6 +359,34 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
                         userModel.setGender(genderValue.getText().toString());
                         userModel.setHoroscopeSign(horoSignValue.getText().toString());
+                        userModel.setGenderPref(genderPrefValue.getText().toString());
+
+                        try {
+                            // Using String.format to parse the decimal number
+                            int distance = Integer.parseInt(distancePrefValue.getText().toString().split(" ")[0]);
+                            userModel.setMaxDistPref(distance);
+//                            // Now 'distance' contains the decimal number
+//                            System.out.println("Distance: " + distance + " km");
+                        } catch (NumberFormatException e) {
+                            // Handle the case where parsing fails
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            // Using String.format to parse the decimal number
+                            int minAge = Integer.parseInt(agePrefValue.getText().toString().split(" ")[0]);
+                            int maxAge = Integer.parseInt(agePrefValue.getText().toString().split(" ")[2]);
+
+                            List<Integer> ageRange = new ArrayList<>();
+                            ageRange.add(minAge);
+                            ageRange.add(maxAge);
+                            userModel.setAgeRangePref(ageRange);
+//                            // Now 'distance' contains the decimal number
+//                            System.out.println("Distance: " + distance + " km");
+                        } catch (NumberFormatException e) {
+                            // Handle the case where parsing fails
+                            e.printStackTrace();
+                        }
 
                         FirestoreUserUtils.updateUserModel(userModel)
                                 .addOnCompleteListener(task -> {
@@ -365,7 +415,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 });
     }
 
-    private void convertChanges() {
-
+    private void cancel() {
+        finish();
     }
 }
