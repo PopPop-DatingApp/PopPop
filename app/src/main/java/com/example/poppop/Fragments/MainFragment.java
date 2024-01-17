@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -17,6 +20,8 @@ import com.example.poppop.Adapters.CardStackAdapter;
 import com.example.poppop.Adapters.UserModelDiffCallback;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
+import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.ViewModel.UsersViewModel;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
 import com.example.poppop.cardstackview.CardStackView;
@@ -30,6 +35,7 @@ import java.util.List;
 
 public class MainFragment extends Fragment implements CardStackListener {
 
+    private UsersViewModel usersViewModel;
     private CardStackView cardStackView;
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
@@ -41,6 +47,23 @@ public class MainFragment extends Fragment implements CardStackListener {
         setupButton(view);
         return view;
     }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Initialize the ViewModel using ViewModelProvider with AndroidViewModelFactory
+        usersViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
+                .get(UsersViewModel.class);
+
+        // Observe the LiveData in the ViewModel
+        usersViewModel.getUserList().observe(getViewLifecycleOwner(), userList -> {
+            if (userList != null) {
+                // Update UI or adapter with the new user list
+                adapter.setUserModels(userList);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
 
     @Override
     public void onCardDragging(Direction direction, float ratio) {
@@ -50,6 +73,8 @@ public class MainFragment extends Fragment implements CardStackListener {
     @Override
     public void onCardSwiped(Direction direction) {
         Log.d("CardStackView", "onCardSwiped: p = " + manager.getTopPosition() + ", d = " + direction);
+        usersViewModel.deleteTopUser();
+        Toast.makeText(requireContext(), "Swiped", Toast.LENGTH_SHORT).show();
         if (manager.getTopPosition() == adapter.getItemCount() - 5) {
             paginate();
         }

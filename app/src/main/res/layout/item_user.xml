@@ -12,11 +12,13 @@
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="true">
 
-    <ImageView
+    <com.example.poppop.Adapters.ClickableImageView
         android:id="@+id/item_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        android:focusable="true" />
 
     <LinearLayout
         android:layout_width="match_parent"

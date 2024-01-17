@@ -18,8 +18,7 @@ import java.util.List;
 public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.ViewHolder> {
 
     private List<UserModel> userModelList;
-
-    private int i = 0;
+    private int i;
 
     public CardStackAdapter(List<UserModel> userModelList) {
         this.userModelList = userModelList;
@@ -38,45 +37,40 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         UserModel userModel = userModelList.get(position);
         holder.name.setText(userModel.getName());
         holder.age.setText(String.valueOf(userModel.getAge()));
-        Glide.with(holder.image)
-                .load(userModel.getImage_list2().get(i))
-                .into(holder.image);
-//        holder.itemView.setOnClickListener(v -> {
-//            i = i + 1;
-//            Glide.with(holder.image)
-//                    .load(userModel.getImage_list2().get(i))
-//                    .into(holder.image);
-//            Toast.makeText(v.getContext(), userModel.getName(), Toast.LENGTH_SHORT).show();
-//        });
+        if(userModel.getImage_list() != null){
 
-        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                float x = event.getX();
+            Glide.with(holder.image)
+                    .load(userModel.getImage_list().get(i).getUrl())
+                    .into(holder.image);
+            holder.image.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    float x = event.getX();
 
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        // Determine whether the click is on the left or right side
-                        if (x < v.getWidth() / 4) {
-                            if(i != 0){
-                                i--;
-                                Glide.with(holder.image)
-                                        .load(userModel.getImage_list2().get(i))
-                                        .into(holder.image);
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            // Determine whether the click is on the left or right side
+                            if (x < v.getWidth() / 4) {
+                                if(i != 0){
+                                    i--;
+                                    Glide.with(holder.image)
+                                            .load(userModel.getImage_list().get(i).getUrl())
+                                            .into(holder.image);
+                                }
+                            } else if (x > v.getWidth() * 0.75) {
+                                if(i != userModel.getImage_list().size() -1){
+                                    i++;
+                                    Glide.with(holder.image)
+                                            .load(userModel.getImage_list().get(i).getUrl())
+                                            .into(holder.image);
+                                }
                             }
-                        } else if (x > v.getWidth() * 0.75) {
-                            if(i != userModel.getImage_list2().size() -1){
-                                i++;
-                                Glide.with(holder.image)
-                                        .load(userModel.getImage_list2().get(i))
-                                        .into(holder.image);
-                            }
-                        }
-                        return true;
+                            return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+        }
     }
 
     public List<UserModel> getUserModels() {
@@ -103,7 +97,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
 
         TextView name;
         TextView age;
-        ImageView image;
+        ClickableImageView image;
 
         ViewHolder(View view) {
             super(view);
