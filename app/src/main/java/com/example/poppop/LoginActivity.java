@@ -2,13 +2,12 @@ package com.example.poppop;
 
 // LoginActivity.java
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -38,13 +37,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login); // Updated layout resource
+        setContentView(R.layout.activity_login_ui); // Updated layout resource
         PaymentConfiguration.init(
                 getApplicationContext(),
                 "pk_test_51OXKSzEP1gGhSTU9IBjjvSKHnLbvHLfP7VtvYjE6MA1KEVaWU9jvbTgFCdoHe85D2ddpHGi63E7mcjtTuUuG3EN500TXV8w8PW"
         );
         // Updated variable name
-        Button loginBtn = findViewById(R.id.login_ggBtn); // Updated button ID
+        ImageButton loginBtn = findViewById(R.id.GoogleButton); // Updated button ID
+        TextView registerLink = findViewById(R.id.RegisterTextView);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -56,6 +56,10 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         loginBtn.setOnClickListener(this::buttonGoogleSignIn);
+        registerLink.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            finish();
+        });
     }
 
     @Override

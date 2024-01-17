@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity_UI">
+    tools:context=".LoginActivity">
 
     <ImageView
         android:id="@+id/boardingNameImage"
@@ -69,10 +69,12 @@
         android:text="Don't have an account? Click here"
         android:textColor="#aeaeae"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordRegisterText" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordRegisterText"
+        android:clickable="true"
+        android:focusable="true" />
 
     <Button
-        android:id="@+id/boardingNameBtn"
+        android:id="@+id/registerBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -94,7 +96,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/boardingNameBtn"
+        app:layout_constraintTop_toBottomOf="@+id/registerBtn"
         />
 
     <ImageButton

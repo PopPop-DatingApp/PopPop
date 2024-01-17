@@ -31,12 +31,6 @@
             android:value="true" />
 
         <activity
-            android:name=".UI_ForPages.swipingActivityUI"
-            android:exported="false" />
-        <activity
-            android:name=".UI_ForPages.UI_PersonalInformation"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -60,7 +54,7 @@
         <!-- android:name=".boardingpages.boardingName" -->
         <!-- android:exported="false" /> -->
         <activity
-            android:name=".RegisterActivity_UI"
+            android:name=".RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity_UI"
