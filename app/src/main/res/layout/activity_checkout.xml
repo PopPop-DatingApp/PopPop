@@ -32,13 +32,24 @@
         android:textColor="#FA628D"/>
 
     <ImageView
-        android:layout_width="300dp"
-        android:layout_height="350dp"
+        android:id="@+id/image2"
+        android:layout_width="350dp"
+        android:layout_height="400dp"
         android:src="@drawable/registervalue"
-        app:layout_constraintTop_toBottomOf="@+id/premiumTitle"
-
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/premiumTitle" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/checkOut_BackBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go Back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image2"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/pay_button"
