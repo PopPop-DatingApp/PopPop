@@ -7,32 +7,31 @@
     tools:context=".ChatActivity">
 
     <RelativeLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:background="@color/black"
-        android:id="@+id/toolbar">
+        android:background="@color/purple_200"
+        android:padding="10dp">
 
         <TextView
+            android:id="@+id/other_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Username"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_marginStart="10dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
             android:layout_toRightOf="@id/back_btn"
-            android:id="@+id/other_username"
-            />
+            android:text="Username"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
-<!--        <include layout="@layout/profile_pic_view"-->
-<!--            android:layout_width="48dp"-->
-<!--            android:layout_height="48dp"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:layout_toRightOf="@id/back_btn"-->
-<!--            android:id="@+id/profile_pic_layout"-->
-<!--            />-->
+        <!--        <include layout="@layout/profile_pic_view"-->
+        <!--            android:layout_width="48dp"-->
+        <!--            android:layout_height="48dp"-->
+        <!--            android:layout_marginStart="10dp"-->
+        <!--            android:layout_toRightOf="@id/back_btn"-->
+        <!--            android:id="@+id/profile_pic_layout"-->
+        <!--            />-->
 
         <ImageButton
             android:id="@+id/back_btn"
