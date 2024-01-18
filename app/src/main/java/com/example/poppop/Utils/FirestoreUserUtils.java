@@ -13,6 +13,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,13 @@ public class FirestoreUserUtils {
         userModel.setPremium(false);
         userModel.setNumOfImages(0);
         userModel.setPhotoUrl(userModel.getProfile());
-        // Add other fields as needed
-
+        // Set Preference
+        List<Integer> ageRangePref = new ArrayList<>();
+        ageRangePref.add(18);
+        ageRangePref.add(35);
+        userModel.setAgeRangePref(ageRangePref);
+        userModel.setMaxDistPref(30);
+        userModel.setGenderPref("Everyone");
         return userModel;
     }
     private static Task<Void> addUserToFirestore(DocumentReference userRef, UserModel userModel) {

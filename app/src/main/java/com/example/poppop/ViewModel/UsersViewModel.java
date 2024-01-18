@@ -58,7 +58,7 @@ public class UsersViewModel extends ViewModel {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 UserModel user = document.toObject(UserModel.class);
                                 Log.d("username", user.getName());
-                                if(user.getCurrentLocation() == null || user.getAge() == null || user.getUserId().equals(currentUserId)) {
+                                if(user.getCurrentLocation() == null || user.getAge() == null || user.getUserId().equals(currentUserId) || myLocation == null) {
                                     Log.d("Skip", "Skip");
                                 } else if (isWithinRadius(user.getCurrentLocation(), myLocation, maxDist)
                                         || isWithinAgeRange(user.getAge(), minAge, maxAge)) {
@@ -92,7 +92,12 @@ public class UsersViewModel extends ViewModel {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 UserModel user = document.toObject(UserModel.class);
                                 Log.d("username", user.getName());
-                                if(user.getCurrentLocation() == null || user.getAge() == null || user.getUserId().equals(currentUserId)) {
+
+                                //Delete this after
+                                if(myLocation == null){
+                                    nearbyMaleUsers.add(user);
+                                }
+                                else if(user.getCurrentLocation() == null || user.getAge() == null || user.getUserId().equals(currentUserId) || myLocation == null) {
                                     Log.d("Skip", "Skip");
                                 } else if (isWithinRadius(user.getCurrentLocation(), myLocation, maxDist)
                                         || isWithinAgeRange(user.getAge(), minAge, maxAge)) {
