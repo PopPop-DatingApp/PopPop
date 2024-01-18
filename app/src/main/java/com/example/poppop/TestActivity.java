@@ -1,191 +1,111 @@
 package com.example.poppop;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
-import android.widget.TextView;
+import android.widget.GridView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DiffUtil;
 
-import com.example.poppop.Adapters.CardStackAdapter;
-import com.example.poppop.Adapters.UserModelDiffCallback;
+import com.example.poppop.Adapters.ImageGridAdapter;
 import com.example.poppop.Model.UserModel;
-import com.example.poppop.cardstackview.CardStackLayoutManager;
-import com.example.poppop.cardstackview.CardStackListener;
-import com.example.poppop.cardstackview.CardStackView;
-import com.example.poppop.cardstackview.Direction;
-import com.example.poppop.cardstackview.Duration;
-import com.example.poppop.cardstackview.RewindAnimationSetting;
-import com.example.poppop.cardstackview.StackFrom;
-import com.example.poppop.cardstackview.SwipeAnimationSetting;
-import com.example.poppop.cardstackview.SwipeableMethod;
+import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.StorageUtils;
+import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestActivity extends AppCompatActivity implements CardStackListener {
+public class TestActivity extends AppCompatActivity {
 
-    private CardStackView cardStackView;
-    private CardStackLayoutManager manager;
-    private CardStackAdapter adapter;
+    private ImageGridAdapter imageGridAdapter;
+    private GridView gridView;
+    private UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-        Log.d("CardStackView", "create");
 
-//        setupNavigation();
-        setupCardStackView();
-        setupButton();
+        displayUserDetails();
     }
 
-    @Override
-    public void onCardDragging(Direction direction, float ratio) {
-        Log.d("CardStackView", "onCardDragging: d = " + direction.name() + ", r = " + ratio);
+    // Replace this method with your logic to populate image URLs
+    private List<String> yourImageUrls() {
+        List<String> urls = new ArrayList<>();
+        // Add your image URLs to the list
+        urls.add("https://firebasestorage.googleapis.com/v0/b/poppop-datingapp.appspot.com/o/images%2FmBxywJd9FuSyyCmeaP3a9XGH0Xo2%2F1705465645606_e52f463c-ac37-43bf-9957-eceb2b82e963.jpg?alt=media&token=18fe164b-a1cc-4a39-bdcf-eda6af77c2c1");
+        urls.add("https://firebasestorage.googleapis.com/v0/b/poppop-datingapp.appspot.com/o/images%2FmBxywJd9FuSyyCmeaP3a9XGH0Xo2%2F1705472715775_ad6d6716-2822-464a-8a2e-87e40cee9410.jpg?alt=media&token=642d951e-30cb-4f12-8299-cb4e3a5e5d25");
+        return urls;
     }
 
-    @Override
-    public void onCardSwiped(Direction direction) {
-        Log.d("CardStackView", "onCardSwiped: p = " + manager.getTopPosition() + ", d = " + direction);
-        if (manager.getTopPosition() == adapter.getItemCount() - 5) {
-            paginate();
-        }
-    }
-
-    @Override
-    public void onCardRewound() {
-        Log.d("CardStackView", "onCardRewound: " + manager.getTopPosition());
-    }
-
-    @Override
-    public void onCardCanceled() {
-        Log.d("CardStackView", "onCardCanceled: " + manager.getTopPosition());
-    }
-
-    @Override
-    public void onCardAppeared(View view, int position) {
-        TextView textView = view.findViewById(R.id.item_name);
-        Log.d("CardStackView", "onCardAppeared: (" + position + ") " + textView.getText());
-    }
-
-    @Override
-    public void onCardDisappeared(View view, int position) {
-        TextView textView = view.findViewById(R.id.item_name);
-        Log.d("CardStackView", "onCardDisappeared: (" + position + ") " + textView.getText());
-    }
-
-    private void setupCardStackView() {
-        initialize();
-    }
-
-    private void setupButton() {
-        View skip = findViewById(R.id.skip_button);
-        skip.setOnClickListener(v -> {
-            SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
-                    .setDirection(Direction.Left)
-                    .setDuration(Duration.Normal.duration)
-                    .setInterpolator(new AccelerateInterpolator())
-                    .build();
-            manager.setSwipeAnimationSetting(setting);
-            cardStackView.swipe();
-        });
-
-        View rewind = findViewById(R.id.rewind_button);
-        rewind.setOnClickListener(v -> {
-            RewindAnimationSetting setting = new RewindAnimationSetting.Builder()
-                    .setDirection(Direction.Bottom)
-                    .setDuration(Duration.Normal.duration)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .build();
-            manager.setRewindAnimationSetting(setting);
-            cardStackView.rewind();
-        });
-
-        View like = findViewById(R.id.like_button);
-        like.setOnClickListener(v -> {
-            SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
-                    .setDirection(Direction.Right)
-                    .setDuration(Duration.Normal.duration)
-                    .setInterpolator(new AccelerateInterpolator())
-                    .build();
-            manager.setSwipeAnimationSetting(setting);
-            cardStackView.swipe();
+    private void displayUserDetails() {
+        DocumentReference userDocRef = FirebaseUtils.getUserReference("upLS5Wg2DCSCZcukzojxBehSdVk1");
+        userDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot.exists()) {
+                    userModel = documentSnapshot.toObject(UserModel.class);
+                    if (userModel != null) {
+                        if(userModel.getImage_list() == null){
+                            userModel.setImage_list(new ArrayList<>());
+                        }
+                        //set up UI
+                        imageGridAdapter = new ImageGridAdapter(this, userModel.getImage_list(), this, userModel);
+                        // Set the adapter on your GridView
+                        gridView.setAdapter(imageGridAdapter);
+                    } else {
+                        // Handle the case where the userModel is null
+                    }
+                }
+            }
         });
     }
 
-    private void initialize() {
-        Log.e("CardStackView", "CardStackLayoutManager is null");
-        manager = new CardStackLayoutManager(this, this);
-        manager.setStackFrom(StackFrom.None);
-        manager.setVisibleCount(3);
-        manager.setTranslationInterval(8.0f);
-        manager.setScaleInterval(0.95f);
-        manager.setSwipeThreshold(0.3f);
-        manager.setMaxDegree(20.0f);
-        manager.setDirections(Direction.HORIZONTAL);
-        manager.setCanScrollHorizontal(true);
-        manager.setCanScrollVertical(true);
-        manager.setSwipeableMethod(SwipeableMethod.AutomaticAndManual);
-        manager.setOverlayInterpolator(new LinearInterpolator());
-        cardStackView = findViewById(R.id.card_stack_view);
-        if (manager != null) {
-            cardStackView.setLayoutManager(manager);
+    public void startImagePicker() {
+        // Start the image picker activity
+        ImagePicker.with(this)
+                .crop()
+                .maxResultSize(1080, 1080)
+                .start();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Handle the result from the ImagePicker
+        if (requestCode == ImagePicker.REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            Uri fileUri = data.getData();
+            // Handle the result
+
+            StorageUtils.uploadImageToStorage(TestActivity.this, userModel, fileUri)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Image uploaded successfully, and task.getResult() contains the download URL
+                            StorageUtils.ImageUploadResult uploadResult = task.getResult();
+                            String uniqueId = uploadResult.getUniqueId();
+                            String downloadUrl = uploadResult.getDownloadUrl();
+                            Log.d("Image upload", uniqueId);
+                            Log.d("Image upload", downloadUrl);
+                            imageGridAdapter.notifyDataSetChanged();
+                            Log.d("Image", ": " + userModel.getImage_list().get(userModel.getImage_list().size()-1).getName());
+                            Log.d("Image", ": " + userModel.getImage_list().get(userModel.getImage_list().size()-1).getUrl());
+                        } else {
+                            // Handle failure
+                            Exception exception = task.getException();
+                            // Handle the exception
+                        }
+                    });
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
         } else {
-            // Handle the case where manager is null
-            Log.e("CardStackView", "CardStackLayoutManager is null");
+            Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
-        adapter = new CardStackAdapter(createUserModels());
-        cardStackView.setAdapter(adapter);
-        cardStackView.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    private void paginate() {
-        List<UserModel> oldUserModels = adapter.getUserModels();
-
-        if (oldUserModels != null) {
-            List<UserModel> newUserModels = new ArrayList<>(oldUserModels);
-            newUserModels.addAll(createUserModels()); // Assuming createUserModels() returns a list of new UserModels
-            UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, newUserModels);
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(callback);
-            adapter.setUserModels(newUserModels);
-            result.dispatchUpdatesTo(adapter);
-        }
-    }
-
-
-    private UserModel createUserModel() {
-        return new UserModel(
-                "Yasaka Shrine",
-                18,
-                "https://source.unsplash.com/Xq1ntWruZQI/600x800"
-        );
-    }
-
-    private List<UserModel> createUserModels() {
-        List<String> images = new ArrayList<>();
-        images.add("https://source.unsplash.com/Xq1ntWruZQI/600x800");
-        images.add("https://source.unsplash.com/NYyCqdBOKwc/600x800");
-        images.add("https://source.unsplash.com/buF62ewDLcQ/600x800");
-        List<UserModel> userModels = new ArrayList<>();
-        userModels.add(new UserModel("John Doe", 25));
-        userModels.add(new UserModel("Jane Smith", 30));
-        userModels.add(new UserModel("Bob Johnson", 28));
-        // Add more users as needed
-        return userModels;
-    }
-
-    private List<UserModel> createUserModels(int count) {
-        List<UserModel> userModels = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            userModels.add(createUserModel());
-        }
-        return userModels;
     }
 }
-

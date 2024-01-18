@@ -90,20 +90,20 @@ public class MainFragment extends Fragment implements CardStackListener {
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        // Remove the observer to avoid "Can't access the Fragment View's LifecycleOwner" error
-        if (userModel != null) {
-            usersViewModel.getUserList(
-                    FirebaseUtils.currentUserId(),
-                    userModel.getCurrentLocation(),
-                    userModel.getGenderPref(),
-                    userModel.getMaxDistPref(),
-                    userModel.getAgeRangePref()
-            ).removeObservers(getViewLifecycleOwner());
-        }
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        // Remove the observer to avoid "Can't access the Fragment View's LifecycleOwner" error
+//        if (userModel != null) {
+//            usersViewModel.getUserList(
+//                    FirebaseUtils.currentUserId(),
+//                    userModel.getCurrentLocation(),
+//                    userModel.getGenderPref(),
+//                    userModel.getMaxDistPref(),
+//                    userModel.getAgeRangePref()
+//            ).removeObservers(getViewLifecycleOwner());
+//        }
+//    }
 
     @Override
     public void onCardDragging(Direction direction, float ratio) {

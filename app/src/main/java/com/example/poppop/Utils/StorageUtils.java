@@ -24,7 +24,61 @@ import java.util.UUID;
 public class StorageUtils {
 
 
-    public static Task<String> uploadImageToStorage(Context context, UserModel userModel, Uri uri, ImageView imageView) {
+//    public static Task<String> uploadImageToStorage(Context context, UserModel userModel, Uri uri, ImageView imageView) {
+//        // Generate a unique ID based on timestamp and random component
+//        String uniqueId = System.currentTimeMillis() + "_" + UUID.randomUUID().toString();
+//
+//        // Create the StorageReference with the unique ID
+//        StorageReference imageRef = FirebaseUtils.getCurrentPicStorageRef().child(uniqueId + ".jpg");
+//        UploadTask uploadTask = imageRef.putFile(uri);
+//
+//        // Create a TaskCompletionSource to manually complete the task
+//        TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
+//
+//        uploadTask.addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                // Retrieve the download URL
+//                imageRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+//                    ImageModel imageModel = new ImageModel(downloadUrl.toString(), uniqueId);
+//                    // Add the download URL to the user's image list
+//                    List<ImageModel> imageList = userModel.getImage_list();
+//                    if (imageList == null) {
+//                        imageList = new ArrayList<>();
+//                    }
+//                    imageList.add(imageModel);
+//                    userModel.setImage_list(imageList);
+//
+//                    // Update the user's image list in Firestore
+//                    FirestoreUserUtils.updateUserImageList(userModel.getUserId(), imageList);
+//
+//                    // Add one to the number of images of the user
+//                    FirestoreUserUtils.addOneImageToUser(userModel.getUserId(), imageList.get(0).getUrl());
+//
+//                    // Display the uploaded image using Glide
+//                    Glide.with(context).load(uri).into(imageView);
+//
+//                    // Complete the task with the download URL
+//                    taskCompletionSource.setResult(downloadUrl.toString());
+//                }).addOnFailureListener(e -> {
+//                    // Handle the failure to get download URL
+//                    Toast.makeText(context, "Please try again", Toast.LENGTH_SHORT).show();
+//                    // Complete the task with an error
+//                    taskCompletionSource.setException(e);
+//                });
+//            } else {
+//                // Handle failures
+//                Log.e("Image", "Fail to upload image", task.getException());
+//                Toast.makeText(context, "Fail to upload image", Toast.LENGTH_SHORT).show();
+//                // Complete the task with an error
+//                taskCompletionSource.setException(task.getException());
+//            }
+//        });
+//
+//        // Return the task associated with the TaskCompletionSource
+//        return taskCompletionSource.getTask();
+//    }
+
+    public static Task<ImageUploadResult> uploadImageToStorage(Context context, UserModel userModel, Uri uri) {
         // Generate a unique ID based on timestamp and random component
         String uniqueId = System.currentTimeMillis() + "_" + UUID.randomUUID().toString();
 
@@ -33,7 +87,7 @@ public class StorageUtils {
         UploadTask uploadTask = imageRef.putFile(uri);
 
         // Create a TaskCompletionSource to manually complete the task
-        TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
+        TaskCompletionSource<ImageUploadResult> taskCompletionSource = new TaskCompletionSource<>();
 
         uploadTask.addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -53,12 +107,9 @@ public class StorageUtils {
 
                     // Add one to the number of images of the user
                     FirestoreUserUtils.addOneImageToUser(userModel.getUserId(), imageList.get(0).getUrl());
-
-                    // Display the uploaded image using Glide
-                    Glide.with(context).load(uri).into(imageView);
-
+                    ImageUploadResult uploadResult = new ImageUploadResult(uniqueId, downloadUrl.toString());
                     // Complete the task with the download URL
-                    taskCompletionSource.setResult(downloadUrl.toString());
+                    taskCompletionSource.setResult(uploadResult);
                 }).addOnFailureListener(e -> {
                     // Handle the failure to get download URL
                     Toast.makeText(context, "Please try again", Toast.LENGTH_SHORT).show();
@@ -77,7 +128,6 @@ public class StorageUtils {
         // Return the task associated with the TaskCompletionSource
         return taskCompletionSource.getTask();
     }
-
 
     public static Task<Void> deleteImageFromStorage(UserModel userModel, ImageModel imageModel) {
         // Get the StorageReference for the image
@@ -116,8 +166,6 @@ public class StorageUtils {
         // Return the task associated with the TaskCompletionSource
         return taskCompletionSource.getTask();
     }
-
-
     // this function below get all image Url from a reference in storage
 //    public static void getAllImageUrlsFromStorage(String userId) {
 //        long startTime = System.currentTimeMillis();
@@ -146,4 +194,23 @@ public class StorageUtils {
 //                });
 //    }
 
+    public static class ImageUploadResult {
+        private final String uniqueId;
+        private final String downloadUrl;
+
+        public ImageUploadResult(String uniqueId, String downloadUrl) {
+            this.uniqueId = uniqueId;
+            this.downloadUrl = downloadUrl;
+        }
+
+        public String getUniqueId() {
+            return uniqueId;
+        }
+
+        public String getDownloadUrl() {
+            return downloadUrl;
+        }
+    }
 }
+
+
