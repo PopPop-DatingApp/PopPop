@@ -135,6 +135,7 @@ public class MainFragment extends Fragment implements CardStackListener {
                 // It's a match!
                 fcmSender.sendPushToSingleInstance(requireActivity(),swipedUserModel.getFcmToken(),"Common!","You have a match!");
                 NotificationUtils.showLocalNotification(getContext(),"Woohoo", "You have a match!");
+                FirebaseUtils.createEmptyChatroomDocumentWithId(userModel.getUserId(),swipedUserModel.getUserId());
             }
         }
         if (manager.getTopPosition() == adapter.getItemCount()) {

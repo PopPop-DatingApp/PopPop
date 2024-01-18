@@ -1,6 +1,10 @@
 package com.example.poppop.Utils;
 
+import android.util.Log;
+
+import com.example.poppop.Model.ChatroomModel;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -9,7 +13,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseUtils {
@@ -38,6 +45,48 @@ public class FirebaseUtils {
 
     public static CollectionReference getChatroomMessageReference(String chatroomId){
         return getChatroomReference(chatroomId).collection("chats");
+    }
+
+    public static void  createEmptyChatroomDocumentWithId(String userId1, String userId2) {
+        String chatroomId = getChatroomId(userId1,userId2);
+        // Access the "chatrooms" collection and add a new empty document with a specific ID
+        getAllChatroomCollectionReference()
+                .document(chatroomId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            // Document already exists, do nothing
+                            Log.d("Chatroom", "Existed");
+                        } else {
+                            Log.d("Chatroom", "Create");
+                            // Document does not exist, create an empty one
+                            ChatroomModel chatroomModel = new ChatroomModel(
+                                    chatroomId,
+                                    Arrays.asList(userId1, userId2),
+                                    Timestamp.now(),
+                                    ""
+                            );
+                            getAllChatroomCollectionReference()
+                                    .document(chatroomId)
+                                    .set(chatroomModel)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Document added successfully
+                                        // Handle success
+                                        System.out.println("Document added with ID: " + chatroomId);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Handle failure
+                                        System.err.println("Error adding document: " + e);
+                                    });
+                        }
+                    } else {
+                        // Handle the exception
+                        Exception exception = task.getException();
+                        System.err.println("Error getting document: " + exception);
+                    }
+                });
     }
 
     public static DocumentReference getOtherUserFromChatroom(List<String> userIds){
