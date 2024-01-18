@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -20,16 +22,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
+import com.example.poppop.Adapters.ImageGridAdapter;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.Utils.ExpandableHeightGridView;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
+import com.example.poppop.Utils.StorageUtils;
 import com.example.poppop.Utils.Utils;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.slider.Slider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +53,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     LinearLayout nameBlock, ageBlock, genderBlock, horoSignBlock;
     LinearLayout genderPrefBlock;
+    ImageGridAdapter imageGridAdapter;
+    ExpandableHeightGridView gridView;
 
 
     @Override
@@ -51,6 +62,7 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
+        gridView = findViewById(R.id.gridView);
         nameValue = findViewById(R.id.nameValue);
         ageValue = findViewById(R.id.ageValue);
         genderValue = findViewById(R.id.genderValue);
@@ -91,6 +103,7 @@ public class EditProfileActivity extends AppCompatActivity {
         if (userModel != null) {
             Log.d("Edit Profile", userModel.getName());
             populateUserData();
+            displayImages();
         } else {
             // Handle the case where "userModel" extra is not present
             Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show();
@@ -131,6 +144,64 @@ public class EditProfileActivity extends AppCompatActivity {
 
         revertBtn.setOnClickListener(v -> cancel());
         saveBtn.setOnClickListener(v -> saveChanges());
+    }
+
+    private void displayImages() {
+        if (userModel != null) {
+            if (userModel.getImage_list() == null) {
+                userModel.setImage_list(new ArrayList<>());
+            }
+            //set up UI
+            imageGridAdapter = new ImageGridAdapter(this, userModel.getImage_list(), this, userModel);
+            // Set the adapter on your GridView
+            gridView.setAdapter(imageGridAdapter);
+            gridView.setExpanded(true);
+        } else {
+            // Handle the case where the userModel is null
+        }
+
+    }
+
+    public void startImagePicker() {
+        // Start the image picker activity
+        ImagePicker.with(this)
+                .crop()
+                .maxResultSize(1080, 1080)
+                .start();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Handle the result from the ImagePicker
+        if (requestCode == ImagePicker.REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            Uri fileUri = data.getData();
+            // Handle the result
+
+            StorageUtils.uploadImageToStorage(this, userModel, fileUri)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Image uploaded successfully, and task.getResult() contains the download URL
+                            StorageUtils.ImageUploadResult uploadResult = task.getResult();
+                            String uniqueId = uploadResult.getUniqueId();
+                            String downloadUrl = uploadResult.getDownloadUrl();
+                            Log.d("Image upload", uniqueId);
+                            Log.d("Image upload", downloadUrl);
+                            imageGridAdapter.notifyDataSetChanged();
+                            Log.d("Image", ": " + userModel.getImage_list().get(userModel.getImage_list().size()-1).getName());
+                            Log.d("Image", ": " + userModel.getImage_list().get(userModel.getImage_list().size()-1).getUrl());
+                        } else {
+                            // Handle failure
+                            Exception exception = task.getException();
+                            // Handle the exception
+                        }
+                    });
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateDistanceText(float value) {
