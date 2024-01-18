@@ -89,6 +89,7 @@
 
 
             <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/profile_editBtn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/circular_bg"

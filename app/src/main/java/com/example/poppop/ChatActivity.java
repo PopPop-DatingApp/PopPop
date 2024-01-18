@@ -30,7 +30,7 @@ public class ChatActivity extends AppCompatActivity {
     ChatroomModel chatroomModel;
     ChatRecyclerAdapter adapter;
     FCMSender fcmSender;
-    UserModel otherUser;
+    UserModel currentUser, otherUser;
     TextView otherUserName;
     EditText msgInput;
     ImageButton sendMsgBtn;
@@ -49,6 +49,17 @@ public class ChatActivity extends AppCompatActivity {
         sendMsgBtn = findViewById(R.id.message_send_btn);
         backBtn = findViewById(R.id.back_btn);
         recyclerView = findViewById(R.id.chat_recycler_view);
+
+        FirestoreUserUtils.getUserModelByUid(FirebaseUtils.currentUserId())
+                .addOnSuccessListener(userModel -> {
+                    // This method is called when UserModel is successfully retrieved
+                    currentUser = userModel;
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the failure case
+                    Log.e("Firestore", "Error retrieving UserModel: " + e.getMessage());
+                    finish();
+                });
 
         FirestoreUserUtils.getUserModelByUid(uid)
                 .addOnSuccessListener(userModel -> {
@@ -136,7 +147,7 @@ public class ChatActivity extends AppCompatActivity {
                     if(task.isSuccessful()){
                         msgInput.setText("");
 //                            sendNotification(message);
-                        fcmSender.sendPushToSingleInstance(this,otherUser.getFcmToken(),FirebaseUtils.currentUserName(),message);
+                        fcmSender.sendPushToSingleInstance(this,otherUser.getFcmToken(),currentUser.getName(),message);
                     }
                 });
     }

@@ -1,144 +1,202 @@
 package com.example.poppop.Fragments;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DiffUtil;
 
-import com.example.poppop.Model.ImageModel;
+import com.example.poppop.Adapters.CardStackAdapter;
+import com.example.poppop.Adapters.UserModelDiffCallback;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
-import com.example.poppop.Utils.FirebaseUtils;
-import com.example.poppop.Utils.StorageUtils;
-import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.example.poppop.ViewModel.UsersViewModel;
+import com.example.poppop.cardstackview.CardStackLayoutManager;
+import com.example.poppop.cardstackview.CardStackListener;
+import com.example.poppop.cardstackview.CardStackView;
+import com.example.poppop.cardstackview.Direction;
+import com.example.poppop.cardstackview.Duration;
+import com.example.poppop.cardstackview.RewindAnimationSetting;
+import com.example.poppop.cardstackview.SwipeAnimationSetting;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class MainFragment extends Fragment {
-    FirebaseUser firebaseUser;
-    TextView main_name;
-    UserModel userModel;
-    ImageView imageView;
-    public MainFragment() {
-        // Required empty public constructor
+public class MainFragment extends Fragment implements CardStackListener {
+
+    private UsersViewModel usersViewModel;
+    private CardStackView cardStackView;
+    private CardStackLayoutManager manager;
+    private CardStackAdapter adapter;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        setupCardStackView(view);
+        setupButton(view);
+        return view;
+    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Initialize the ViewModel using ViewModelProvider with AndroidViewModelFactory
+        usersViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
+                .get(UsersViewModel.class);
+
+        // Observe the LiveData in the ViewModel
+        usersViewModel.getUserList().observe(getViewLifecycleOwner(), userList -> {
+            if (userList != null) {
+                // Update UI or adapter with the new user list
+                adapter.setUserModels(userList);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(firebaseUser != null){
-           displayUserDetails(firebaseUser.getUid());
+    public void onCardDragging(Direction direction, float ratio) {
+        Log.d("CardStackView", "onCardDragging: d = " + direction.name() + ", r = " + ratio);
+    }
+
+    @Override
+    public void onCardSwiped(Direction direction) {
+        Log.d("CardStackView", "onCardSwiped: p = " + manager.getTopPosition() + ", d = " + direction);
+        usersViewModel.deleteTopUser();
+        Toast.makeText(requireContext(), "Swiped", Toast.LENGTH_SHORT).show();
+        if (manager.getTopPosition() == adapter.getItemCount() - 5) {
+            paginate();
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        main_name = view.findViewById(R.id.main_name);
-        Button pickBtn = view.findViewById(R.id.button2);
-        Button deleteBtn = view.findViewById(R.id.button);
-        imageView = view.findViewById(R.id.imageView);
-        pickBtn.setOnClickListener(v ->
-                ImagePicker.with(this)
-                        .crop()
-//                    .compress(1024)
-                        .maxResultSize(1080, 1080)
-                        .createIntent(intent -> {
-                            startForProfileImageResult.launch(intent);
-                            return null;
-                        }));
-
-        deleteBtn.setOnClickListener(v -> {
-            if (userModel.getNumOfImages() > 0) {
-                StorageUtils.deleteImageFromStorage(userModel, userModel.getImage_list().get(userModel.getNumOfImages() - 1))
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                // Image deleted successfully, now update the UI
-                                displayUserDetails(firebaseUser.getUid());
-                                Toast.makeText(requireContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
-                            } else {
-                                // Handle failure
-                                Toast.makeText(requireContext(), "Failed to delete image: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            } else {
-                Toast.makeText(requireContext(), "There is no image to delete", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        return view;
+    public void onCardRewound() {
+        Log.d("CardStackView", "onCardRewound: " + manager.getTopPosition());
     }
 
-    private void displayUserDetails(String userId) {
-        DocumentReference userDocRef = FirebaseUtils.getUserReference(userId);
-        userDocRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot documentSnapshot = task.getResult();
-                if (documentSnapshot.exists()) {
-                    userModel = documentSnapshot.toObject(UserModel.class);
-                    if(userModel != null){
-                        //set up UI
-                        main_name.setText(userModel.getName());
+    @Override
+    public void onCardCanceled() {
+        Log.d("CardStackView", "onCardCanceled: " + manager.getTopPosition());
+    }
 
-                        // retrieve the list of image url for display
-                        List<ImageModel> imageList = userModel.getImage_list();
-                    }
-//                    else{
-//                        // Handle profile exit
-//                        getActivity().getSupportFragmentManager().popBackStack();
-//                    }
-                }
-            }
+    @Override
+    public void onCardAppeared(View view, int position) {
+        TextView textView = view.findViewById(R.id.item_name);
+        Log.d("CardStackView", "onCardAppeared: (" + position + ") " + textView.getText());
+    }
+
+    @Override
+    public void onCardDisappeared(View view, int position) {
+        TextView textView = view.findViewById(R.id.item_name);
+        Log.d("CardStackView", "onCardDisappeared: (" + position + ") " + textView.getText());
+    }
+
+    private void setupCardStackView(View view) {
+        initialize(view);
+    }
+
+    private void setupButton(View view) {
+        View skip = view.findViewById(R.id.skip_button);
+        skip.setOnClickListener(v -> {
+            // Swipe left logic
+            SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
+                    .setDirection(Direction.Left)
+                    .setDuration(Duration.Normal.duration)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .build();
+            manager.setSwipeAnimationSetting(setting);
+            cardStackView.swipe();
+        });
+
+        View rewind = view.findViewById(R.id.rewind_button);
+        rewind.setOnClickListener(v -> {
+            RewindAnimationSetting setting = new RewindAnimationSetting.Builder()
+                    .setDirection(Direction.Bottom)
+                    .setDuration(Duration.Normal.duration)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .build();
+            manager.setRewindAnimationSetting(setting);
+            cardStackView.rewind();
+        });
+
+        View like = view.findViewById(R.id.like_button);
+        like.setOnClickListener(v -> {
+            SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
+                    .setDirection(Direction.Right)
+                    .setDuration(Duration.Normal.duration)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .build();
+            manager.setSwipeAnimationSetting(setting);
+            cardStackView.swipe();
         });
     }
-    private final ActivityResultLauncher<Intent> startForProfileImageResult =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        int resultCode = result.getResultCode();
-                        Intent data = result.getData();
 
-                        if (resultCode == Activity.RESULT_OK && data != null) {
-                            Uri fileUri = data.getData();
-                            // Handle the result
-                            // Store image to Storage
-                            StorageUtils.uploadImageToStorage(requireContext(),userModel,fileUri, imageView)
-                                    .addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            // Image uploaded successfully, and task.getResult() contains the download URL
-                                            displayUserDetails(firebaseUser.getUid());
-                                        } else {
-                                            // Handle failure
-//                                            Exception exception = task.getException();
-                                            Toast.makeText(requireContext(), "Fail to upload, please try again", Toast.LENGTH_SHORT).show();
-                                            // Handle the exception
-                                        }
-                                    });
-                        } else if (resultCode == ImagePicker.RESULT_ERROR) {
-                            Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+    private void initialize(View view) {
+        manager = new CardStackLayoutManager(requireContext(), this);
+        // Rest of the initialization code...
 
+        cardStackView = view.findViewById(R.id.card_stack_view);
+        if (manager != null) {
+            cardStackView.setLayoutManager(manager);
+        } else {
+            // Handle the case where manager is null
+            Log.e("CardStackView", "CardStackLayoutManager is null");
+        }
+        adapter = new CardStackAdapter(createUserModels());
+        cardStackView.setAdapter(adapter);
+        cardStackView.setItemAnimator(new DefaultItemAnimator());
+    }
 
+    private void paginate() {
+        List<UserModel> oldUserModels = adapter.getUserModels();
+
+        if (oldUserModels != null) {
+            List<UserModel> newUserModels = new ArrayList<>(oldUserModels);
+            newUserModels.addAll(createUserModels()); // Assuming createUserModels() returns a list of new UserModels
+            UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, newUserModels);
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(callback);
+            adapter.setUserModels(newUserModels);
+            result.dispatchUpdatesTo(adapter);
+        }
+    }
+
+    private UserModel createUserModel() {
+        return new UserModel(
+                "Yasaka Shrine",
+                18,
+                "https://source.unsplash.com/Xq1ntWruZQI/600x800"
+        );
+    }
+
+    private List<UserModel> createUserModels() {
+        List<String> images = new ArrayList<>();
+        images.add("https://source.unsplash.com/Xq1ntWruZQI/600x800");
+        images.add("https://source.unsplash.com/NYyCqdBOKwc/600x800");
+        images.add("https://source.unsplash.com/buF62ewDLcQ/600x800");
+        List<UserModel> userModels = new ArrayList<>();
+        userModels.add(new UserModel("John Doe", 25));
+        userModels.add(new UserModel("Jane Smith", 30));
+        userModels.add(new UserModel("Bob Johnson", 28));
+        // Add more users as needed
+        return userModels;
+    }
+
+    private List<UserModel> createUserModels(int count) {
+        List<UserModel> userModels = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            userModels.add(createUserModel());
+        }
+        return userModels;
+    }
 
 }

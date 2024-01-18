@@ -31,7 +31,18 @@ public class FirestoreUserUtils {
                 } else {
                     // User does not exist, create a new UserModel
                     UserModel newUserModel = createNewUserModel(user);
-                    addUserToFirestore(userRef, newUserModel);
+                    addUserToFirestore(userRef, newUserModel)
+                            .addOnCompleteListener(task2 -> {
+                                if (task2.isSuccessful()) {
+                                    // If the update is successful, start the new activity
+                                } else {
+                                    // Handle errors here
+                                    Exception exception = task2.getException();
+                                    if (exception != null) {
+                                        exception.printStackTrace();
+                                    }
+                                }
+                            });;
                     return newUserModel;
                 }
             } else {
@@ -52,9 +63,9 @@ public class FirestoreUserUtils {
 
         return userModel;
     }
-    private static void addUserToFirestore(DocumentReference userRef, UserModel userModel) {
+    private static Task<Void> addUserToFirestore(DocumentReference userRef, UserModel userModel) {
         // Add user data to Firestore
-        userRef.set(userModel)
+        return userRef.set(userModel)
                 .addOnSuccessListener(aVoid -> Log.d("Firestore", "User added successfully to Firestore!"))
                 .addOnFailureListener(e -> Log.w("Firestore", "Error adding user to Firestore", e));
     }
@@ -117,6 +128,11 @@ public class FirestoreUserUtils {
                 return null;
             }
         });
+    }
+
+    public static Task<Void> updateUserModel(UserModel userModel) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userModel.getUserId());
+        return addUserToFirestore(userRef, userModel);
     }
 
     public static Task<Void> updateAge(String userId, int age) {
