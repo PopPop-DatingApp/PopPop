@@ -52,7 +52,7 @@ public class CheckoutActivity extends AppCompatActivity {
         payButton = findViewById(R.id.pay_button);
 
         backBtn.setOnClickListener(v -> {
-            onBackPressed();
+            finish();
         });
 
         PaymentConfiguration.init(

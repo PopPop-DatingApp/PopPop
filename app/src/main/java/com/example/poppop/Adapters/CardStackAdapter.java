@@ -37,7 +37,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         UserModel userModel = userModelList.get(position);
         holder.name.setText(userModel.getName());
         holder.age.setText(String.valueOf(userModel.getAge()));
-        if(userModel.getImage_list() != null){
+        if(userModel.getImage_list() != null && userModel.getImage_list().size() != 0){
 
             Glide.with(holder.image)
                     .load(userModel.getImage_list().get(i).getUrl())

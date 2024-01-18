@@ -34,7 +34,7 @@ public class ProfileFragment extends Fragment{
     TextView userName;
     Button logoutBtn;
     ImageButton editProfileBtn;
-    ImageView avatar;
+    ImageView avatar, checked_image;
 
     Button premiumButton;
     public ProfileFragment() {
@@ -66,6 +66,7 @@ public class ProfileFragment extends Fragment{
         avatar = view.findViewById(R.id.profile_avatar);
         logoutBtn = view.findViewById(R.id.profile_logout);
         editProfileBtn = view.findViewById(R.id.profile_editBtn);
+        checked_image = view.findViewById(R.id.checked_image);
         premiumButton = view.findViewById(R.id.premiereBtn);
         premiumButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CheckoutActivity.class);
@@ -104,8 +105,10 @@ public class ProfileFragment extends Fragment{
                         //set up UI
                         String name = userModel.getName() + (userModel.getAge() == null ? "" : ", " + userModel.getAge());
                         userName.setText(name);
-                        if(userModel.getPremium())
+                        if(userModel.getPremium()){
                             premiumButton.setText("View your premium package");
+                            checked_image.setVisibility(View.VISIBLE);
+                        }
                         Utils.setProfilePic(requireContext(),userModel.getPhotoUrl(),avatar);
                     }
                     else{

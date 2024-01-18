@@ -113,6 +113,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
 
+    <ImageView
+        android:id="@+id/checked_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/checked"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_username"
+        app:layout_constraintStart_toEndOf="@+id/profile_username"
+        app:layout_constraintTop_toTopOf="@+id/profile_username" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/premiereBtn"
         android:layout_width="wrap_content"
