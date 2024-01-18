@@ -11,7 +11,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -20,11 +19,9 @@ import androidx.recyclerview.widget.DiffUtil;
 import com.example.poppop.Adapters.CardStackAdapter;
 import com.example.poppop.Adapters.UserModelDiffCallback;
 import com.example.poppop.EditProfileActivity;
-import com.example.poppop.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirebaseUtils;
-import com.example.poppop.Utils.Utils;
 import com.example.poppop.ViewModel.UsersViewModel;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
@@ -50,17 +47,14 @@ public class MainFragment extends Fragment implements CardStackListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        initializeFragmentView(view);
         setupCardStackView(view);
         setupButton(view);
         return view;
     }
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
-        View fragmentView = getView(); // Get the Fragment's view
-
-        if (fragmentView != null) {
+    private void initializeFragmentView(View view) {
+        if (view != null) {
             DocumentReference userDocRef = FirebaseUtils.getUserReference(FirebaseUtils.currentUserId());
             userDocRef.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -96,6 +90,20 @@ public class MainFragment extends Fragment implements CardStackListener {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Remove the observer to avoid "Can't access the Fragment View's LifecycleOwner" error
+        if (userModel != null) {
+            usersViewModel.getUserList(
+                    FirebaseUtils.currentUserId(),
+                    userModel.getCurrentLocation(),
+                    userModel.getGenderPref(),
+                    userModel.getMaxDistPref(),
+                    userModel.getAgeRangePref()
+            ).removeObservers(getViewLifecycleOwner());
+        }
+    }
 
     @Override
     public void onCardDragging(Direction direction, float ratio) {
