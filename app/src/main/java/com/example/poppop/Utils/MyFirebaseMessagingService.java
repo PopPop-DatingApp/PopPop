@@ -50,6 +50,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+    public void sendNotification(String title, String msg){
+        if (hasNotificationPermission()) {
+            createNotificationChannel(); // Ensure the notification channel exists
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentTitle(title)
+                    .setContentText(msg)
+                    .setAutoCancel(true);
+
+            NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            manager.notify(101, builder.build());
+        } else {
+
+        }
+    }
+
     private void sendNotificationBroadcast() {
         Intent intent = new Intent("notification_received");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

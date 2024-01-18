@@ -21,7 +21,10 @@ import com.example.poppop.Adapters.UserModelDiffCallback;
 import com.example.poppop.EditProfileActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
+import com.example.poppop.Utils.FCMSender;
 import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.FirestoreUserUtils;
+import com.example.poppop.Utils.NotificationUtils;
 import com.example.poppop.ViewModel.UsersViewModel;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
@@ -43,6 +46,7 @@ public class MainFragment extends Fragment implements CardStackListener {
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
     private UserModel userModel;
+    FCMSender fcmSender;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class MainFragment extends Fragment implements CardStackListener {
         initializeFragmentView(view);
         setupCardStackView(view);
         setupButton(view);
+        fcmSender = new FCMSender(requireContext());
         return view;
     }
 
@@ -113,9 +118,26 @@ public class MainFragment extends Fragment implements CardStackListener {
     @Override
     public void onCardSwiped(Direction direction) {
         Log.d("CardStackView", "onCardSwiped: p = " + manager.getTopPosition() + ", d = " + direction);
-        usersViewModel.deleteTopUser();
-        Toast.makeText(requireContext(), "Swiped", Toast.LENGTH_SHORT).show();
-        if (manager.getTopPosition() == adapter.getItemCount() - 5) {
+        if(direction.equals(Direction.Right)){
+            int swipedPosition = manager.getTopPosition();
+            UserModel swipedUserModel = adapter.getUserModels().get(swipedPosition - 1); // Adjust for zero-based index
+
+            // Add swipedUserModel to the liked_list of the current user
+            if(userModel.getLiked_list() == null) {
+                FirestoreUserUtils.addUserToLikedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId(), true);
+            }
+            else if(!userModel.getLiked_list().contains(swipedUserModel.getUserId())) {
+                FirestoreUserUtils.addUserToLikedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId(), false);
+            }
+
+            // Check if the current user is in the swiped user's liked_list
+            if (swipedUserModel.getLiked_list() != null && swipedUserModel.getLiked_list().contains(FirebaseUtils.currentUserId())) {
+                // It's a match!
+                fcmSender.sendPushToSingleInstance(requireActivity(),swipedUserModel.getFcmToken(),"Common!","You have a match!");
+                NotificationUtils.showLocalNotification(getContext(),"Woohoo", "You have a match!");
+            }
+        }
+        if (manager.getTopPosition() == adapter.getItemCount()) {
             paginate();
         }
     }
@@ -202,12 +224,19 @@ public class MainFragment extends Fragment implements CardStackListener {
         List<UserModel> oldUserModels = adapter.getUserModels();
 
         if (oldUserModels != null) {
+            usersViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+                if (userList != null) {
+                    // Update UI or adapter with the new user list
+                    UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, userList);
+                    DiffUtil.DiffResult result = DiffUtil.calculateDiff(callback);
+                    adapter.setUserModels(userList);
+                    result.dispatchUpdatesTo(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+            });
             List<UserModel> newUserModels = new ArrayList<>(oldUserModels);
             newUserModels.addAll(createUserModels()); // Assuming createUserModels() returns a list of new UserModels
-            UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, newUserModels);
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(callback);
-            adapter.setUserModels(newUserModels);
-            result.dispatchUpdatesTo(adapter);
+
         }
     }
 

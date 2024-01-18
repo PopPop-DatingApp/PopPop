@@ -305,4 +305,23 @@ public class FirestoreUserUtils {
         });
     }
 
+    public static void addUserToLikedList(String currentUserId, String likedUserId, Boolean isListNull) {
+        // Get reference to the current user's document in the "users" collection
+        DocumentReference currentUserRef = FirebaseUtils.getUserReference(currentUserId);
+        if(isListNull){
+            List<String> initialLikedList = new ArrayList<>();
+            initialLikedList.add(likedUserId);
+
+            // Update the liked_list in the database
+            currentUserRef.update("liked_list", initialLikedList)
+                    .addOnSuccessListener(aVoid -> Log.d("FirebaseUtils", "User added to liked_list"))
+                    .addOnFailureListener(e -> Log.e("FirebaseUtils", "Error adding user to liked_list", e));
+        }else{
+            // Atomically add the likedUserId to the liked_list if not already present
+            currentUserRef.update("liked_list", FieldValue.arrayUnion(likedUserId))
+                    .addOnSuccessListener(aVoid -> Log.d("FirebaseUtils", "User added to liked_list"))
+                    .addOnFailureListener(e -> Log.e("FirebaseUtils", "Error adding user to liked_list", e));
+        }
+    }
+
 }

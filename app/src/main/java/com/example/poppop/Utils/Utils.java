@@ -47,7 +47,6 @@ public class Utils {
     public static void checkNotificationPermission(Activity activity, Context context){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-
                 requestPermissions(activity,new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
         }

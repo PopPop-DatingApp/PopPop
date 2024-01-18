@@ -37,10 +37,10 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         UserModel userModel = userModelList.get(position);
         holder.name.setText(userModel.getName());
         holder.age.setText(String.valueOf(userModel.getAge()));
+        holder.setImageIndex(0);
         if(userModel.getImage_list() != null && userModel.getImage_list().size() != 0){
-            i = 0;
             Glide.with(holder.image)
-                    .load(userModel.getImage_list().get(i).getUrl())
+                    .load(userModel.getImage_list().get(holder.imageIndex).getUrl())
                     .into(holder.image);
             holder.image.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -51,17 +51,17 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
                         case MotionEvent.ACTION_DOWN:
                             // Determine whether the click is on the left or right side
                             if (x < v.getWidth() / 4) {
-                                if(i != 0){
-                                    i--;
+                                if(holder.imageIndex > 0){
+                                    holder.imageIndex--;
                                     Glide.with(holder.image)
-                                            .load(userModel.getImage_list().get(i).getUrl())
+                                            .load(userModel.getImage_list().get(holder.imageIndex).getUrl())
                                             .into(holder.image);
                                 }
                             } else if (x > v.getWidth() * 0.75) {
-                                if(i != userModel.getImage_list().size() -1){
-                                    i++;
+                                if(holder.imageIndex < userModel.getImage_list().size() -1){
+                                    holder.imageIndex++;
                                     Glide.with(holder.image)
-                                            .load(userModel.getImage_list().get(i).getUrl())
+                                            .load(userModel.getImage_list().get(holder.imageIndex).getUrl())
                                             .into(holder.image);
                                 }
                             }
@@ -98,12 +98,18 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         TextView name;
         TextView age;
         ClickableImageView image;
+        private int imageIndex;
 
         ViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.item_name);
             age = view.findViewById(R.id.item_age);
             image = view.findViewById(R.id.item_image);
+            imageIndex = 0;
+        }
+
+        public void setImageIndex(int index) {
+            this.imageIndex = index;
         }
     }
 }
