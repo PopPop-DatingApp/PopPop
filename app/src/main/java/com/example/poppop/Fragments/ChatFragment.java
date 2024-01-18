@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.example.poppop.Adapters.RecentChatRecyclerAdapter;
 import com.example.poppop.Model.ChatroomModel;
+import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.Query;
 public class ChatFragment extends Fragment {
     RecyclerView recyclerView;
     RecentChatRecyclerAdapter adapter;
+    UserModel userModel;
     public ChatFragment() {
     // Required empty public constructor
     }

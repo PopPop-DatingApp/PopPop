@@ -29,16 +29,14 @@ public class UserModel implements Parcelable {
     }
 
     Integer maxDistPref;
-
+    List<Integer> ageRangePref;
+    String genderPref;
     public String getGenderPref() {
         return genderPref;
     }
-
     public void setGenderPref(String genderPref) {
         this.genderPref = genderPref;
     }
-
-    String genderPref;
     Boolean isPremium;
 
     public List<Integer> getAgeRangePref() {
@@ -49,7 +47,7 @@ public class UserModel implements Parcelable {
         this.ageRangePref = ageRangePref;
     }
 
-    List<Integer> ageRangePref;
+
 
     protected UserModel(Parcel in) {
         userId = in.readString();

@@ -1,5 +1,6 @@
 package com.example.poppop.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,8 +19,12 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import com.example.poppop.Adapters.CardStackAdapter;
 import com.example.poppop.Adapters.UserModelDiffCallback;
+import com.example.poppop.EditProfileActivity;
+import com.example.poppop.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
+import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.Utils;
 import com.example.poppop.ViewModel.UsersViewModel;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
@@ -28,6 +33,8 @@ import com.example.poppop.cardstackview.Direction;
 import com.example.poppop.cardstackview.Duration;
 import com.example.poppop.cardstackview.RewindAnimationSetting;
 import com.example.poppop.cardstackview.SwipeAnimationSetting;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +45,7 @@ public class MainFragment extends Fragment implements CardStackListener {
     private CardStackView cardStackView;
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
+    private UserModel userModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,19 +58,44 @@ public class MainFragment extends Fragment implements CardStackListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Initialize the ViewModel using ViewModelProvider with AndroidViewModelFactory
-        usersViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
-                .get(UsersViewModel.class);
+        View fragmentView = getView(); // Get the Fragment's view
 
-        // Observe the LiveData in the ViewModel
-        usersViewModel.getUserList().observe(getViewLifecycleOwner(), userList -> {
-            if (userList != null) {
-                // Update UI or adapter with the new user list
-                adapter.setUserModels(userList);
-                adapter.notifyDataSetChanged();
-            }
-        });
+        if (fragmentView != null) {
+            DocumentReference userDocRef = FirebaseUtils.getUserReference(FirebaseUtils.currentUserId());
+            userDocRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if (documentSnapshot.exists()) {
+                        userModel = documentSnapshot.toObject(UserModel.class);
+                        if (userModel != null && userModel.getGenderPref() != null) {
+                            //set up UI
+                            // Initialize the ViewModel using ViewModelProvider with AndroidViewModelFactory
+                            usersViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
+                                    .get(UsersViewModel.class);
+
+                            // Observe the LiveData in the ViewModel
+                            usersViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+                                if (userList != null) {
+                                    // Update UI or adapter with the new user list
+                                    adapter.setUserModels(userList);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        } else {
+                            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                            startActivity(intent);
+                            // Handle profile exit
+                            // requireActivity().getSupportFragmentManager().popBackStack();
+                        }
+                    }
+                }
+            });
+        } else {
+            // Handle the case where the Fragment's view is null
+            Log.e("MainFragment", "Fragment view is null in onActivityCreated");
+        }
     }
+
 
     @Override
     public void onCardDragging(Direction direction, float ratio) {
