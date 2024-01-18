@@ -1,9 +1,12 @@
 package com.example.poppop;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -118,9 +121,17 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(
             final PaymentSheetResult paymentSheetResult
+
     ) {
+        ImageView imagePayment = findViewById(R.id.image_payment);
+        TextView premiumTitle = findViewById(R.id.premiumTitle);
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             showToast("Payment complete!");
+            imagePayment.setImageResource(R.drawable.checked);
+
+            // Set the title to "Purchased Success"
+            premiumTitle.setText("Purchased Success");
+            premiumTitle.setTextColor(Color.parseColor("#008000"));
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             Log.i(TAG, "Payment canceled!");
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {

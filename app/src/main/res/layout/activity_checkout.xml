@@ -7,6 +7,39 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".CheckoutActivity"
     tools:showIn="@layout/activity_checkout">
+
+    <ImageView
+        android:id="@+id/image_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/premium"
+        android:paddingTop="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/premiumTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="PREMIUM PACKAGE"
+        app:layout_constraintTop_toBottomOf="@+id/image_payment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:textColor="#FA628D"/>
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="350dp"
+        android:src="@drawable/registervalue"
+        app:layout_constraintTop_toBottomOf="@+id/premiumTitle"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <Button
         android:id="@+id/pay_button"
         android:text="Pay now"
