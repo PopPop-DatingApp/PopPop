@@ -217,6 +217,22 @@ public class FirestoreUserUtils {
                 });
     }
 
+    public static Task<Void> updatePremium(String userId) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("premium", true);
+
+        return userRef.update(updates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Firestore", "User gets premium package");
+                    } else {
+                        Log.e("Firestore", "Error updating user premium package", task.getException());
+                    }
+                });
+    }
+
     public static void updateUserImageList(String userId, List<ImageModel> imageList) {
         DocumentReference userRef = FirebaseUtils.getUserReference(userId);
 

@@ -55,9 +55,6 @@ public class ProfileFragment extends Fragment{
             // If user is logged in, display user details
             displayUserDetails(firebaseUser.getUid());
         }
-
-
-
     }
 
     @Override
@@ -72,8 +69,10 @@ public class ProfileFragment extends Fragment{
         premiumButton = view.findViewById(R.id.premiereBtn);
         premiumButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CheckoutActivity.class);
+            intent.putExtra("userModel", userModel);
             startActivity(intent);
         });
+
         logoutBtn.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             // Optionally, sign out from Google as well
@@ -105,6 +104,8 @@ public class ProfileFragment extends Fragment{
                         //set up UI
                         String name = userModel.getName() + (userModel.getAge() == null ? "" : ", " + userModel.getAge());
                         userName.setText(name);
+                        if(userModel.getPremium())
+                            premiumButton.setText("View your premium package");
                         Utils.setProfilePic(requireContext(),userModel.getPhotoUrl(),avatar);
                     }
                     else{
