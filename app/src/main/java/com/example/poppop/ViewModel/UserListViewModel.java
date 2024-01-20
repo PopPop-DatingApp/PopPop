@@ -15,7 +15,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UsersViewModel extends ViewModel {
+public class UserListViewModel extends ViewModel {
     private MutableLiveData<List<UserModel>> userList;
 
     private static final double EARTH_RADIUS = 6371.0;

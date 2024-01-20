@@ -2,6 +2,7 @@ package com.example.poppop.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,32 +12,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.poppop.CheckoutActivity;
 import com.example.poppop.EditProfileActivity;
 import com.example.poppop.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
-import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.Utils;
+import com.example.poppop.ViewModel.UserViewModel;
+import com.example.poppop.ViewModel.UserViewModelFactory;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 public class ProfileFragment extends Fragment{
+    private final String TAG = "ProfileFragment";
     FirebaseUser firebaseUser;
-
     UserModel userModel;
     TextView userName;
     Button logoutBtn;
     ImageButton editProfileBtn;
     ImageView avatar, checked_image;
-
     Button premiumButton;
+    private UserViewModel userViewModel;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -52,8 +55,21 @@ public class ProfileFragment extends Fragment{
             startActivity(intent);
             getActivity().finish();
         } else {
-            // If user is logged in, display user details
-            displayUserDetails(firebaseUser.getUid());
+            // If the user is logged in, display user details
+            userViewModel = new ViewModelProvider(requireActivity(), new UserViewModelFactory(new FirestoreUserUtils())).get(UserViewModel.class);
+            userViewModel.startListeningToUserData(firebaseUser.getUid());
+
+            // Observe changes in the user model
+            userViewModel.getUserLiveData().observe(this, userModel -> {
+                if (userModel != null) {
+                    // User data has changed, update your UI accordingly
+                    Log.d(TAG, userModel.getName());
+                    updateUI(userModel);
+                } else {
+                    // Handle the case where the user data is null or not found
+                    Log.d(TAG, "User data is null");
+                }
+            });
         }
     }
 
@@ -94,29 +110,28 @@ public class ProfileFragment extends Fragment{
         return view;
     }
 
-    private void displayUserDetails(String userId) {
-        DocumentReference userDocRef = FirebaseUtils.getUserReference(userId);
-        userDocRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot documentSnapshot = task.getResult();
-                if (documentSnapshot.exists()) {
-                    userModel = documentSnapshot.toObject(UserModel.class);
-                    if(userModel != null){
-                        //set up UI
-                        String name = userModel.getName() + (userModel.getAge() == null ? "" : ", " + userModel.getAge());
-                        userName.setText(name);
-                        if(userModel.getPremium()){
-                            premiumButton.setText("View your premium package");
-                            checked_image.setVisibility(View.VISIBLE);
-                        }
-                        Utils.setProfilePic(requireContext(),userModel.getPhotoUrl(),avatar);
-                    }
-                    else{
-                        // Handle profile exit
-                        requireActivity().getSupportFragmentManager().popBackStack();
-                    }
-                }
-            }
-        });
+    private void updateUI(UserModel userModel) {
+        this.userModel = userModel;
+        // Update UI elements based on the userModel
+        String name = userModel.getName() + (userModel.getAge() == null ? "" : ", " + userModel.getAge());
+        userName.setText(name);
+
+        if (userModel.getPremium()) {
+            premiumButton.setText("View your premium package");
+            checked_image.setVisibility(View.VISIBLE);
+        } else {
+            premiumButton.setText("Upgrade to premium");
+            checked_image.setVisibility(View.GONE);
+        }
+
+        Utils.setProfilePic(requireContext(), userModel.getPhotoUrl(), avatar);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (userViewModel != null) {
+            userViewModel.stopListeningToUserData();
+        }
     }
 }
