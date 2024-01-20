@@ -47,14 +47,13 @@
             android:id="@+id/reportBtn"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="12dp"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/unmatchBtn"
+            android:layout_marginEnd="0dp"
             android:background="@drawable/custom_rounded_corner_btn"
             android:text="Report"
             android:textColor="@color/btn_text_red"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/unmatchBtn"
@@ -64,25 +63,25 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="0dp"
             android:background="@drawable/custom_rounded_corner_btn"
-android:backgroundTint="@color/btn_gray"
-            android:textColor="@color/btn_text_cyan"
-            android:text="Unmatch" />
+            android:backgroundTint="@color/btn_gray"
+            android:text="Unmatch"
+            android:textColor="@color/btn_text_cyan" />
 
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
         android:layout_above="@id/bottom_layout"
-        android:id="@+id/chat_recycler_view"/>
+        android:layout_below="@id/toolbar" />
 
     <RelativeLayout
+        android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"
-        android:padding="8dp"
-        android:id="@+id/bottom_layout">
+        android:padding="8dp">
 
         <EditText
             android:id="@+id/chat_message_input"

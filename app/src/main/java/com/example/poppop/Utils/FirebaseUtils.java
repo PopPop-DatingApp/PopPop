@@ -20,6 +20,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class FirebaseUtils {
+    public static CollectionReference getAllReportCasesCollectionReference(){
+        return FirebaseFirestore.getInstance().collection("reportCases");
+    }
+    public static DocumentReference getReportCaseReference(String reportCaseId){
+        return FirebaseFirestore.getInstance().collection("reportCases").document(reportCaseId);
+    }
     public static DocumentReference getAdminReference(String adminId){
         return FirebaseFirestore.getInstance().collection("admins").document(adminId);
     }
