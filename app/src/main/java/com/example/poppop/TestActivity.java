@@ -9,11 +9,15 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.poppop.Adapters.ImageGridAdapter;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.StorageUtils;
+import com.example.poppop.ViewModel.UserViewModel;
+import com.example.poppop.ViewModel.UserViewModelFactory;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -22,17 +26,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestActivity extends AppCompatActivity {
+    private final String TAG = "TestActivity";
 
     private ImageGridAdapter imageGridAdapter;
     private GridView gridView;
     private UserModel userModel;
+    private UserViewModel userViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+        // Initialize the UserViewModel
+        userViewModel = new ViewModelProvider(this, new UserViewModelFactory(new FirestoreUserUtils())).get(UserViewModel.class);
 
-        displayUserDetails();
+        // Start listening to real-time updates
+        userViewModel.startListeningToUserData("JrK3odNcypVZOSdevWpdHVreFlv2");
+
+        // Observe the LiveData for updates
+        userViewModel.getUserLiveData().observe(this, userModel -> {
+            if (userModel != null) {
+                // User data has changed, update your UI accordingly
+                Log.d("TestActivity", userModel.getName());
+            } else {
+                // Handle the case where the user data is null or not found
+                Log.d("TestActivity", "User data is null");
+            }
+        });
+//        displayUserDetails();
     }
 
     // Replace this method with your logic to populate image URLs

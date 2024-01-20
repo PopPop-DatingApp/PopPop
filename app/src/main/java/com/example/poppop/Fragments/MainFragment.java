@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -25,7 +24,7 @@ import com.example.poppop.Utils.FCMSender;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.NotificationUtils;
-import com.example.poppop.ViewModel.UsersViewModel;
+import com.example.poppop.ViewModel.UserListViewModel;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
 import com.example.poppop.cardstackview.CardStackView;
@@ -41,7 +40,7 @@ import java.util.List;
 
 public class MainFragment extends Fragment implements CardStackListener {
 
-    private UsersViewModel usersViewModel;
+    private UserListViewModel userListViewModel;
     private CardStackView cardStackView;
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
@@ -69,11 +68,11 @@ public class MainFragment extends Fragment implements CardStackListener {
                         if (userModel != null && userModel.getGenderPref() != null) {
                             //set up UI
                             // Initialize the ViewModel using ViewModelProvider with AndroidViewModelFactory
-                            usersViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
-                                    .get(UsersViewModel.class);
+                            userListViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
+                                    .get(UserListViewModel.class);
 
                             // Observe the LiveData in the ViewModel
-                            usersViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+                            userListViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
                                 if (userList != null) {
                                     // Update UI or adapter with the new user list
                                     adapter.setUserModels(userList);
@@ -225,7 +224,7 @@ public class MainFragment extends Fragment implements CardStackListener {
         List<UserModel> oldUserModels = adapter.getUserModels();
 
         if (oldUserModels != null) {
-            usersViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+            userListViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
                 if (userList != null) {
                     // Update UI or adapter with the new user list
                     UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, userList);

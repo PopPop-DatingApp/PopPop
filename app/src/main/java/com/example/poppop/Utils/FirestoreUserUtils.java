@@ -10,8 +10,10 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +23,11 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class FirestoreUserUtils {
+
+    public ListenerRegistration listenToUserData(String uid, EventListener<DocumentSnapshot> listener) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(uid);
+        return userRef.addSnapshotListener(listener);
+    }
     public static Task<UserModel> checkIfUserExistsThenAdd(FirebaseUser user) {
         DocumentReference userRef = FirebaseUtils.getUserReference(user.getUid());
         return userRef.get().continueWith(task -> {
