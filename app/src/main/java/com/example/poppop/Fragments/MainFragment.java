@@ -72,7 +72,7 @@ public class MainFragment extends Fragment implements CardStackListener {
                                     .get(UserListViewModel.class);
 
                             // Observe the LiveData in the ViewModel
-                            userListViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+                            userListViewModel.getUserListWithPref(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
                                 if (userList != null) {
                                     // Update UI or adapter with the new user list
                                     adapter.setUserModels(userList);
@@ -224,7 +224,7 @@ public class MainFragment extends Fragment implements CardStackListener {
         List<UserModel> oldUserModels = adapter.getUserModels();
 
         if (oldUserModels != null) {
-            userListViewModel.getUserList(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+            userListViewModel.getUserListWithPref(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
                 if (userList != null) {
                     // Update UI or adapter with the new user list
                     UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, userList);

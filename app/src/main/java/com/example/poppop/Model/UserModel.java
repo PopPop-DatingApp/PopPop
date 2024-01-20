@@ -20,6 +20,16 @@ public class UserModel implements Parcelable {
     List<String> interests;
     List<ImageModel> image_list;
     Boolean isAdmin;
+    Boolean isBanned;
+
+
+    public Boolean getBanned() {
+        return isBanned;
+    }
+
+    public void setBanned(Boolean banned) {
+        isBanned = banned;
+    }
 
     public Integer getMaxDistPref() {
         return maxDistPref;
@@ -79,7 +89,9 @@ public class UserModel implements Parcelable {
         swiped_list = in.createStringArrayList();
         image_list = in.createTypedArrayList(ImageModel.CREATOR);
         byte tmpIsPremium = in.readByte();
+        byte tmpIsBanned = in.readByte();
         isPremium = tmpIsPremium == 0 ? null : tmpIsPremium == 1;
+        isBanned = tmpIsBanned == 0 ? null : tmpIsBanned == 1;
         genderPref = in.readString();
         ageRangePref = new ArrayList<>();
         int ageRangePrefSize = in.readInt();
@@ -307,6 +319,7 @@ public class UserModel implements Parcelable {
         dest.writeStringList(swiped_list);
         dest.writeTypedList(image_list);
         dest.writeByte((byte) (isPremium == null ? 0 : isPremium ? 1 : 2));
+        dest.writeByte((byte) (isBanned == null ? 0 : isBanned ? 1 : 2));
         dest.writeString(genderPref);
 
         if (ageRangePref == null) {

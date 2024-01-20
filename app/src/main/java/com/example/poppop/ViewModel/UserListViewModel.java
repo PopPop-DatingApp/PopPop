@@ -20,7 +20,7 @@ public class UserListViewModel extends ViewModel {
 
     private static final double EARTH_RADIUS = 6371.0;
 
-    public LiveData<List<UserModel>> getUserList(String currentUserId, GeoPoint userLocation, String genderPref, int maxDist, List<Integer> ageRangePref) {
+    public LiveData<List<UserModel>> getUserListWithPref(String currentUserId, GeoPoint userLocation, String genderPref, int maxDist, List<Integer> ageRangePref) {
         Log.d("getUserList", "userLocation: " + userLocation + ", genderPref: " + genderPref +
                 ", maxDist: " + maxDist + ", ageRangePref: " + ageRangePref);
         if (userList == null) {
@@ -99,7 +99,6 @@ public class UserListViewModel extends ViewModel {
                                     nearbyMaleUsers.add(user);
                                 }
 
-//
 //                                // Limit to 10 users
 //                                if (nearbyMaleUsers.size() >= 10) {
 //                                    break;

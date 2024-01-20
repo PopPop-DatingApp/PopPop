@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseUtils {
+    public static DocumentReference getAdminReference(String adminId){
+        return FirebaseFirestore.getInstance().collection("admins").document(adminId);
+    }
     public static String currentUserId(){
         return FirebaseAuth.getInstance().getUid();
     }
