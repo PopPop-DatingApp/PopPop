@@ -23,13 +23,8 @@ import com.example.poppop.Utils.FCMSender;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Arrays;
 
@@ -189,10 +184,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private void performUnmatch() {
         // Delete the chatroom
-        FirebaseUtils.deleteSubCollectionAndDocumentAndRemoveUsers(
+        FirebaseUtils.deleteChatroom(
                 chatroomId,
-                currentUser.getUserId(),
-                otherUser.getUserId(),
                 task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(ChatActivity.this, "Unmatched successfully", Toast.LENGTH_SHORT).show();
