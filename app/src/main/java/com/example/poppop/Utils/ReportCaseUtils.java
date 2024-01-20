@@ -10,10 +10,30 @@ import com.google.firestore.v1.WriteResult;
 public class ReportCaseUtils {
     private static final String COLLECTION_NAME = "reportCases";
 
-    public static void addReportCase(ReportCaseModel reportCase, final OnCompleteListener<DocumentReference> onCompleteListener) {
+    public static void addReportCase(ReportCaseModel reportCase, final OnCompleteListener<Void> onCompleteListener) {
         // Add a new document with a generated ID to the "reportCases" collection
         FirebaseUtils.getAllReportCasesCollectionReference()
                 .add(reportCase)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Document added successfully, retrieve the auto-generated ID
+                        DocumentReference documentReference = task.getResult();
+                        String generatedId = documentReference.getId();
+
+                        // Now, update the document with the generated ID
+                        updateReportCaseWithId(generatedId, onCompleteListener);
+                    } else {
+
+                    }
+                });
+    }
+
+    private static void updateReportCaseWithId(String generatedId, OnCompleteListener<Void> onCompleteListener) {
+        // Get the reference to the specific document using the generated ID
+        DocumentReference documentReference = FirebaseUtils.getAllReportCasesCollectionReference().document(generatedId);
+
+        // Update the document with the generated ID
+        documentReference.update("reportCaseId", generatedId)
                 .addOnCompleteListener(onCompleteListener);
     }
 

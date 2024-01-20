@@ -17,9 +17,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.poppop.Activities.LoginActivity;
-import com.example.poppop.Fragments.ChatFragment;
-import com.example.poppop.Fragments.MainFragment;
-import com.example.poppop.Fragments.ProfileFragment;
+import com.example.poppop.Fragments_User.ChatFragment;
+import com.example.poppop.Fragments_User.MainFragment;
+import com.example.poppop.Fragments_User.ProfileFragment;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.LocationUtils;

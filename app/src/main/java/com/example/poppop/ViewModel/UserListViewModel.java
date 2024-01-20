@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.poppop.Model.ReportCaseModel;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.google.firebase.firestore.CollectionReference;
@@ -16,9 +17,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserListViewModel extends ViewModel {
-    private MutableLiveData<List<UserModel>> userList;
+    private static final String TAG = "UserListViewModel";
+    private MutableLiveData<List<UserModel>> userList =  new MutableLiveData<List<UserModel>>();
 
     private static final double EARTH_RADIUS = 6371.0;
+
+    public LiveData<List<UserModel>> getAllUser(){
+        return userList;
+    }
+
+    public void listenToUserList() {
+        FirebaseUtils.getAllUsersCollectionReference().addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (e != null) {
+                Log.e(TAG, "Listen failed.", e);
+                userList.setValue(null);
+                return;
+            }
+
+            List<UserModel> userModelList = new ArrayList<>();
+
+            if (queryDocumentSnapshots != null) {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    if(!documentSnapshot.contains("isAdmin"))
+                        continue;
+                    UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                    userModelList.add(userModel);
+                }
+
+                userList.setValue(userModelList);
+            } else {
+                Log.d(TAG, "Current data: null");
+                userList.setValue(null);
+            }
+        });
+    }
 
     public LiveData<List<UserModel>> getUserListWithPref(String currentUserId, GeoPoint userLocation, String genderPref, int maxDist, List<Integer> ageRangePref) {
         Log.d("getUserList", "userLocation: " + userLocation + ", genderPref: " + genderPref +

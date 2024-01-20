@@ -9,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
+import com.example.poppop.Adapters.MyPagerAdapter;
 import com.example.poppop.Adapters.UserAdapter;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
@@ -17,6 +19,7 @@ import com.example.poppop.Utils.AdminUtils;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.ViewModel.AdminViewModel;
 import com.example.poppop.ViewModel.AdminViewModelFactory;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
@@ -29,22 +32,12 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        // Create an instance of AdminViewModel
-        adminViewModel = new ViewModelProvider(this, new AdminViewModelFactory(new AdminUtils())).get(AdminViewModel.class);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        ViewPager viewPager = findViewById(R.id.viewPager);
 
-        // Start listening to admin data
-        adminViewModel.startListeningToAdminData(FirebaseUtils.currentUserId());
-
-        // Observe changes in admin data
-        adminViewModel.getAdminLiveData().observe(this, adminModel -> {
-            if (adminModel != null) {
-                // Admin data has changed, update your UI accordingly
-                getAllUsers();
-            } else {
-                // Handle the case where the admin data is null or not found
-                Log.d(TAG, "Admin data is null");
-            }
-        });
+        MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     private void getAllUsers() {

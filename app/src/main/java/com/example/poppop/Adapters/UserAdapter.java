@@ -42,7 +42,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserModel user = userList.get(position);
 
-        String role = "Role: " + (user.getPremium() ? REGULAR : PREMIUM);
+        Boolean premium = user.getPremium();
+        String role = "Role: " + ((premium != null && premium) ? PREMIUM : REGULAR);
+
         holder.role.setText(role);
         String status;
         if(user.getBanned() != null && user.getBanned()){

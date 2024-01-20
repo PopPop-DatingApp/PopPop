@@ -4,6 +4,7 @@ package com.example.poppop.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -51,56 +52,57 @@ public class LoginActivity extends AppCompatActivity {
         );
         mAuth = FirebaseAuth.getInstance();
 
-        usernameRegisterText= findViewById(R.id.usernameRegisterText);
+        usernameRegisterText = findViewById(R.id.usernameRegisterText);
         passwordRegisterText = findViewById(R.id.passwordRegisterText);
         loginBtn = findViewById(R.id.loginBtn);
-        loginBtn.setOnClickListener(v->{
+        loginBtn.setOnClickListener(v -> {
             String username = usernameRegisterText.getText().toString();
             String password = passwordRegisterText.getText().toString();
-            mAuth.signInWithEmailAndPassword(username, password)
-                    .addOnCompleteListener(LoginActivity.this, task -> {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
-                                FirestoreUserUtils.checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
-                                        UserModel userModel = task1.getResult();
-                                        if (userModel != null && userModel.getAdmin() != null && userModel.getAdmin()) {
-                                            // Handle admin login
-                                            // ...
-                                            startActivity(new Intent(LoginActivity.this, AdminActivity.class));
-                                        } else if (userModel != null) {
-                                            Log.d(TAG, userModel.getUserId());
-                                            // Handle regular user login
-                                            if (userModel.getAge() == null) {
-                                                startActivity(new Intent(LoginActivity.this, boardingName.class));
-                                            } else {
-                                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                                finish();
+            if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password))
+                mAuth.signInWithEmailAndPassword(username, password)
+                        .addOnCompleteListener(LoginActivity.this, task -> {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null) {
+                                    FirestoreUserUtils.checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
+                                            UserModel userModel = task1.getResult();
+                                            if (userModel != null && userModel.getAdmin() != null && userModel.getAdmin()) {
+                                                // Handle admin login
+                                                // ...
+                                                startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+                                            } else if (userModel != null) {
+                                                Log.d(TAG, userModel.getUserId());
+                                                // Handle regular user login
+                                                if (userModel.getAge() == null) {
+                                                    startActivity(new Intent(LoginActivity.this, boardingName.class));
+                                                } else {
+                                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                                    finish();
+                                                }
+                                                FirestoreUserUtils.updateFCMTokenForUser(userModel)
+                                                        .thenAccept(result -> {
+                                                            Toast.makeText(LoginActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
+                                                        })
+                                                        .exceptionally(throwable -> {
+                                                            Log.e("FCM token update", "Failed: " + throwable.getMessage());
+                                                            Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
+                                                            return null;
+                                                        });
                                             }
-                                            FirestoreUserUtils.updateFCMTokenForUser(userModel)
-                                                    .thenAccept(result -> {
-                                                        Toast.makeText(LoginActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
-                                                    })
-                                                    .exceptionally(throwable -> {
-                                                        Log.e("FCM token update", "Failed: " + throwable.getMessage());
-                                                        Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
-                                                        return null;
-                                                    });
-                                        }
 
-                                    } else {
-                                        Exception exception = task1.getException();
-                                        Log.e("exception", exception.toString());
-                                        Toast.makeText(LoginActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                        } else {
+                                            Exception exception = task1.getException();
+                                            Log.e("exception", exception.toString());
+                                            Toast.makeText(LoginActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Fail to sign in", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Fail to sign in", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                        });
         });
         // Updated variable name
         ImageButton loginBtn = findViewById(R.id.GoogleButton); // Updated button ID
@@ -112,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        loginBtn.setOnClickListener(v ->{
+        loginBtn.setOnClickListener(v -> {
             Intent intent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(intent, RC_SIGN_IN);
         });
@@ -127,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            if(resultCode == RESULT_CANCELED)
+            if (resultCode == RESULT_CANCELED)
                 return;
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
@@ -149,9 +151,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (task1.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                             UserModel userModel = task1.getResult();
-                            if (userModel.getAge() == null){
+                            if (userModel.getAge() == null) {
                                 startActivity(new Intent(LoginActivity.this, boardingName.class));
-                            }else{
+                            } else {
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                 finish();
                             }
