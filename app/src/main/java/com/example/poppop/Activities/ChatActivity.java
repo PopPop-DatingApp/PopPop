@@ -4,11 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.poppop.Adapters.ChatRecyclerAdapter;
 import com.example.poppop.Model.ChatMessageModel;
@@ -20,9 +24,12 @@ import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Arrays;
 
@@ -37,6 +44,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageButton sendMsgBtn;
     ImageButton backBtn;
     RecyclerView recyclerView;
+    Button unmatchBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,7 @@ public class ChatActivity extends AppCompatActivity {
         sendMsgBtn = findViewById(R.id.message_send_btn);
         backBtn = findViewById(R.id.back_btn);
         recyclerView = findViewById(R.id.chat_recycler_view);
+        unmatchBtn = findViewById(R.id.unmatchBtn);
 
         FirestoreUserUtils.getUserModelByUid(FirebaseUtils.currentUserId())
                 .addOnSuccessListener(userModel -> {
@@ -89,6 +98,9 @@ public class ChatActivity extends AppCompatActivity {
             if(message.isEmpty())
                 return;
             sendMessageToUser(message);
+        });
+        unmatchBtn.setOnClickListener(v -> {
+            unmatchUser();
         });
 
     }
@@ -149,6 +161,44 @@ public class ChatActivity extends AppCompatActivity {
                         msgInput.setText("");
 //                            sendNotification(message);
                         fcmSender.sendPushToSingleInstance(this,otherUser.getFcmToken(),currentUser.getName(),message);
+                    }
+                });
+    }
+
+    void unmatchUser() {
+        // Show a confirmation dialog before unmatching
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Unmatch")
+                .setMessage("Are you sure you want to unmatch with " + otherUser.getName() + "?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked Yes, proceed with the unmatch
+                        performUnmatch();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked No, do nothing or handle accordingly
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void performUnmatch() {
+        // Delete the chatroom
+        FirebaseUtils.deleteSubCollectionAndDocumentAndRemoveUsers(
+                chatroomId,
+                currentUser.getUserId(),
+                otherUser.getUserId(),
+                task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(ChatActivity.this, "Unmatched successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Handle the failure case
+                        Toast.makeText(ChatActivity.this, "Failed to unmatch", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

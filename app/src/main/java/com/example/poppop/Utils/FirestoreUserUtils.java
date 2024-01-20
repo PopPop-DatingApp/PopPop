@@ -363,5 +363,13 @@ public class FirestoreUserUtils {
                     .addOnFailureListener(e -> Log.e("FirebaseUtils", "Error adding user to liked_list", e));
         }
     }
+    public static void removeUserFromLikedList(String currentUserId, String unlikedUserId) {
+        // Get reference to the current user's document in the "users" collection
+        DocumentReference currentUserRef = FirebaseUtils.getUserReference(currentUserId);
 
+        // Atomically remove the unlikedUserId from the liked_list
+        currentUserRef.update("liked_list", FieldValue.arrayRemove(unlikedUserId))
+                .addOnSuccessListener(aVoid -> Log.d("FirebaseUtils", "User removed from liked_list"))
+                .addOnFailureListener(e -> Log.e("FirebaseUtils", "Error removing user from liked_list", e));
+    }
 }

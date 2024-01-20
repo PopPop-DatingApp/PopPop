@@ -1,8 +1,10 @@
 package com.example.poppop.Utils;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.poppop.Model.ChatroomModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -10,8 +12,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -145,6 +150,49 @@ public class FirebaseUtils {
     public static StorageReference getOtherPicStorageRef(String otherUserId){
         return FirebaseStorage.getInstance().getReference().child("images")
                 .child(otherUserId);
+    }
+
+    public static void deleteSubCollectionAndDocumentAndRemoveUsers(String chatroomId,
+                                                                    String currentUserId, String otherUserId,
+                                                                    OnCompleteListener<Void> onCompleteListener) {
+        // Reference to the subcollection
+        CollectionReference subCollectionRef = FirebaseFirestore.getInstance()
+                .collection("chatrooms").document(chatroomId).collection("chats");
+
+        subCollectionRef.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Iterate through the documents in the subcollection
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Delete each document in the subcollection
+                            document.getReference().delete();
+                        }
+
+                        // Now delete the document itself
+                        deleteDocumentAndRemoveUsers(chatroomId, currentUserId, otherUserId, onCompleteListener);
+                    } else {
+                        // Handle the failure case
+//                        onCompleteListener.onComplete(task);
+                    }
+                });
+    }
+
+    private static void deleteDocumentAndRemoveUsers(String chatroomId, String currentUserId, String otherUserId,
+                                                     OnCompleteListener<Void> onCompleteListener) {
+        // Reference to the document
+        DocumentReference documentRef = FirebaseFirestore.getInstance().collection("chatrooms").document(chatroomId);
+
+        documentRef.delete()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Additional logic to remove users from liked_list
+                        FirestoreUserUtils.removeUserFromLikedList(currentUserId, otherUserId);
+                        FirestoreUserUtils.removeUserFromLikedList(otherUserId, currentUserId);
+                    }
+
+                    // Call the listener to handle completion in the activity
+                    onCompleteListener.onComplete(task);
+                });
     }
 
 }
