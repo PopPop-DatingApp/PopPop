@@ -317,10 +317,12 @@ public class ChatActivity extends AppCompatActivity implements ChatRecyclerAdapt
                 task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(ChatActivity.this, "Unmatched successfully", Toast.LENGTH_SHORT).show();
+
                     } else {
                         // Handle the failure case
                         Toast.makeText(ChatActivity.this, "Failed to unmatch", Toast.LENGTH_SHORT).show();
                     }
+                    finish();
                 });
     }
 }
