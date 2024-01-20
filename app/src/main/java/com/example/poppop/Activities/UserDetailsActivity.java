@@ -20,7 +20,7 @@ public class UserDetailsActivity extends AppCompatActivity {
         // Use userModel to display details in your activity UI
         if (userModel != null) {
             // Example: Display user name
-            TextView textViewUserName = findViewById(R.id.textViewUserName);
+            TextView textViewUserName = findViewById(R.id.userName);
             textViewUserName.setText(userModel.getName());
         }
     }

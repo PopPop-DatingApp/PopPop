@@ -1,5 +1,6 @@
 package com.example.poppop.Adapters;
 
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
     private List<UserModel> userList;
     private OnUserClickListener onUserClickListener;
+    private final String REGULAR = "REGULAR";
+    private final String PREMIUM = "PREMIUM";
+
 
     public UserAdapter(List<UserModel> userList, OnUserClickListener onUserClickListener) {
         this.userList = userList;
@@ -33,8 +37,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserModel user = userList.get(position);
-        holder.textViewUserName.setText(user.getName());
-
+        String status = "Status: ";
+        String role = "Role: " + (user.getPremium() ? REGULAR : PREMIUM);
+        holder.userName.setText(user.getName());
+        holder.userId.setText(user.getUserId());
+        holder.role.setText(role);
         // Handle item click
         holder.itemView.setOnClickListener(v -> {
             if (onUserClickListener != null) {
@@ -49,11 +56,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewUserName;
+        TextView userName, userId, role;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewUserName = itemView.findViewById(R.id.textViewUserName);
+            userName = itemView.findViewById(R.id.userName);
+            userId = itemView.findViewById(R.id.userId);
+            role = itemView.findViewById(R.id.role);
         }
     }
 
