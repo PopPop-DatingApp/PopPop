@@ -2,8 +2,6 @@ package com.example.poppop.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,21 +9,15 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.cardview.widget.CardView;
 
 import com.bumptech.glide.Glide;
-import com.example.poppop.EditProfileActivity;
+import com.example.poppop.Activities.EditProfileActivity;
 import com.example.poppop.Model.ImageModel;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
-import com.example.poppop.TestActivity;
 import com.example.poppop.Utils.StorageUtils;
-import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;

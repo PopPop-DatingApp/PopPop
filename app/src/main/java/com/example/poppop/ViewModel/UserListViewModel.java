@@ -57,7 +57,7 @@ public class UserListViewModel extends ViewModel {
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 UserModel user = document.toObject(UserModel.class);
-                                Log.d("username", user.getName());
+                                if(user.getAdmin() != null) continue;
                                 if(user.getCurrentLocation() == null || user.getAge() == null || user.getUserId().equals(currentUserId) || myLocation == null) {
                                     Log.d("Skip", "Skip");
                                 } else if (isWithinRadius(user.getCurrentLocation(), myLocation, maxDist)

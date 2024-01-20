@@ -35,7 +35,23 @@ public class FirestoreUserUtils {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     // User exists, retrieve data from Firestore and create UserModel
-                    return document.toObject(UserModel.class);
+                    if (document.getData() != null) {
+                        UserModel existingUserModel = document.toObject(UserModel.class);
+                        if (existingUserModel != null) {
+                            // Check if the isAdmin field exists in the document
+                            if (document.contains("isAdmin")) {
+                                // Set the isAdmin field in the UserModel
+                                existingUserModel.setAdmin(document.getBoolean("isAdmin"));
+                            }
+                            return existingUserModel;
+                        } else {
+                            // Handle the case where existingUserModel is null
+                            return null;
+                        }
+                    } else {
+                        // Handle the case where the document doesn't have any fields
+                        return null;
+                    }
                 } else {
                     // User does not exist, create a new UserModel
                     UserModel newUserModel = createNewUserModel(user);

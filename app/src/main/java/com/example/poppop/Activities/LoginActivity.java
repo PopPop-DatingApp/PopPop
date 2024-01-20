@@ -1,11 +1,10 @@
-package com.example.poppop;
+package com.example.poppop.Activities;
 
 // LoginActivity.java
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -14,7 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.poppop.MainActivity;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.R;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.boardingpages.boardingName;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.stripe.android.PaymentConfiguration;
 
 public class LoginActivity extends AppCompatActivity {
+    private final String TAG = "LoginActivity";
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -64,21 +66,30 @@ public class LoginActivity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                                         UserModel userModel = task1.getResult();
-                                        if (userModel.getAge() == null){
-                                            startActivity(new Intent(LoginActivity.this, boardingName.class));
-                                        }else{
-                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                            finish();
+                                        if (userModel != null && userModel.getAdmin() != null && userModel.getAdmin()) {
+                                            // Handle admin login
+                                            // ...
+                                            startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+                                        } else if (userModel != null) {
+                                            Log.d(TAG, userModel.getUserId());
+                                            // Handle regular user login
+                                            if (userModel.getAge() == null) {
+                                                startActivity(new Intent(LoginActivity.this, boardingName.class));
+                                            } else {
+                                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                                finish();
+                                            }
+                                            FirestoreUserUtils.updateFCMTokenForUser(userModel)
+                                                    .thenAccept(result -> {
+                                                        Toast.makeText(LoginActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
+                                                    })
+                                                    .exceptionally(throwable -> {
+                                                        Log.e("FCM token update", "Failed: " + throwable.getMessage());
+                                                        Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
+                                                        return null;
+                                                    });
                                         }
-                                        FirestoreUserUtils.updateFCMTokenForUser(userModel)
-                                                .thenAccept(result -> {
-                                                    Toast.makeText(LoginActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
-                                                })
-                                                .exceptionally(throwable -> {
-                                                    Log.e("FCM token update", "Failed: " + throwable.getMessage());
-                                                    Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
-                                                    return null;
-                                                });
+
                                     } else {
                                         Exception exception = task1.getException();
                                         Log.e("exception", exception.toString());

@@ -1,4 +1,4 @@
-package com.example.poppop;
+package com.example.poppop.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +14,7 @@ import com.example.poppop.Adapters.ChatRecyclerAdapter;
 import com.example.poppop.Model.ChatMessageModel;
 import com.example.poppop.Model.ChatroomModel;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.R;
 import com.example.poppop.Utils.FCMSender;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;

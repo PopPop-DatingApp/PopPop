@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.poppop.Activities.LoginActivity;
 import com.example.poppop.Fragments.ChatFragment;
 import com.example.poppop.Fragments.MainFragment;
 import com.example.poppop.Fragments.ProfileFragment;
@@ -35,6 +36,13 @@ public class MainActivity extends AppCompatActivity implements LocationUtils.Geo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (isUserAdmin()) {
+            // Sign out the user
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+//            finish(); // Close MainActivity if navigating to AdminActivity
+            return; // Prevent further execution of MainActivity logic
+        }
         setContentView(R.layout.activity_main);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -107,6 +115,26 @@ public class MainActivity extends AppCompatActivity implements LocationUtils.Geo
                     });
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Check if the user is an admin
+        if (isUserAdmin()) {
+            // Sign out the user when the app is destroyed
+            FirebaseAuth.getInstance().signOut();
+        }
+    }
+
+    private boolean isUserAdmin() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        // Check if the user is not null and if their UID matches the admin UID
+        return user != null && user.getUid().equals("eytgZRn5uGZTEcpCcBuUIo5QH0a2");
+    }
+
 
     private void replaceFragment(Fragment fragment, Bundle args) {
         if (args != null)

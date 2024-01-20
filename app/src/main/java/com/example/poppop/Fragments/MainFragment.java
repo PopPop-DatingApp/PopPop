@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import com.example.poppop.Adapters.CardStackAdapter;
 import com.example.poppop.Adapters.UserModelDiffCallback;
-import com.example.poppop.EditProfileActivity;
+import com.example.poppop.Activities.EditProfileActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FCMSender;

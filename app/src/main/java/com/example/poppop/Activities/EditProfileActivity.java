@@ -1,4 +1,4 @@
-package com.example.poppop;
+package com.example.poppop.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -28,7 +27,9 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
 import com.example.poppop.Adapters.ImageGridAdapter;
+import com.example.poppop.MainActivity;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.R;
 import com.example.poppop.Utils.ExpandableHeightGridView;
 import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
@@ -37,8 +38,6 @@ import com.example.poppop.Utils.Utils;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.slider.Slider;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;

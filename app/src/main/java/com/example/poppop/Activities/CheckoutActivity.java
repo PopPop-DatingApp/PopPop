@@ -1,4 +1,4 @@
-package com.example.poppop;
+package com.example.poppop.Activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,7 +16,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.example.poppop.MainActivity;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.R;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;

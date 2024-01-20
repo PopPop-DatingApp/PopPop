@@ -19,6 +19,7 @@ public class UserModel implements Parcelable {
     List<String> swiped_list;
     List<String> interests;
     List<ImageModel> image_list;
+    Boolean isAdmin;
 
     public Integer getMaxDistPref() {
         return maxDistPref;
@@ -89,6 +90,14 @@ public class UserModel implements Parcelable {
             ageRangePref = null;
         }
 
+    }
+
+    public Boolean getAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
     }
 
     public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {

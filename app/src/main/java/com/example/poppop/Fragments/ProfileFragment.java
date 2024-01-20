@@ -14,9 +14,9 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.poppop.CheckoutActivity;
-import com.example.poppop.EditProfileActivity;
-import com.example.poppop.LoginActivity;
+import com.example.poppop.Activities.CheckoutActivity;
+import com.example.poppop.Activities.EditProfileActivity;
+import com.example.poppop.Activities.LoginActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FirestoreUserUtils;

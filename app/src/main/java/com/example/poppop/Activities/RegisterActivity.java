@@ -1,4 +1,4 @@
-package com.example.poppop;
+package com.example.poppop.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,7 +9,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.poppop.MainActivity;
 import com.example.poppop.Model.UserModel;
+import com.example.poppop.R;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.boardingpages.boardingName;
 import com.google.firebase.auth.FirebaseAuth;
