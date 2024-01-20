@@ -65,11 +65,6 @@ public class UsersViewModel extends ViewModel {
                                     nearbyMaleUsers.add(user);
                                 }
 
-
-                                // Limit to 10 users
-                                if (nearbyMaleUsers.size() >= 10) {
-                                    break;
-                                }
                             }
 
                             //Sort theo diem
@@ -104,11 +99,11 @@ public class UsersViewModel extends ViewModel {
                                     nearbyMaleUsers.add(user);
                                 }
 
-
-                                // Limit to 10 users
-                                if (nearbyMaleUsers.size() >= 10) {
-                                    break;
-                                }
+//
+//                                // Limit to 10 users
+//                                if (nearbyMaleUsers.size() >= 10) {
+//                                    break;
+//                                }
                             }
 
                             //Sort theo diem
