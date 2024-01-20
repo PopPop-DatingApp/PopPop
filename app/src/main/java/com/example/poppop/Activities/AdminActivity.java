@@ -52,11 +52,6 @@ public class AdminActivity extends AppCompatActivity {
         AdminUtils.getAllUsersList(new AdminUtils.FirestoreListener<List<UserModel>>() {
             @Override
             public void onSuccess(List<UserModel> userList) {
-                // Process the list of users
-//                for (UserModel user : userList) {
-//                    Log.d(TAG, "User ID: " + user.getUserId() + ", Name: " + user.getName());
-//                    // Add your logic to display user information in the UI
-//                }
                 displayUserList(userList);
             }
 
@@ -78,9 +73,18 @@ public class AdminActivity extends AppCompatActivity {
             // Handle user click
             Intent intent = new Intent(AdminActivity.this, UserDetailsActivity.class);
             intent.putExtra("userModel", user);
+            intent.putExtra("userId", user.getUserId());
             startActivity(intent);
         });
         recyclerView.setAdapter(userAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Reload your data here
+        getAllUsers();
     }
 
     @Override

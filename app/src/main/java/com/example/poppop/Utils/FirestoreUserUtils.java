@@ -90,6 +90,7 @@ public class FirestoreUserUtils {
         userModel.setAgeRangePref(ageRangePref);
         userModel.setMaxDistPref(30);
         userModel.setGenderPref("Everyone");
+        userModel.setBanned(false);
         return userModel;
     }
     private static Task<Void> addUserToFirestore(DocumentReference userRef, UserModel userModel) {
@@ -258,6 +259,22 @@ public class FirestoreUserUtils {
                         Log.d("Firestore", "User gets premium package");
                     } else {
                         Log.e("Firestore", "Error updating user premium package", task.getException());
+                    }
+                });
+    }
+
+    public static Task<Void> updateStatus(String userId, Boolean isBanned) {
+        DocumentReference userRef = FirebaseUtils.getUserReference(userId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("banned", isBanned);
+
+        return userRef.update(updates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Firestore", "Update status successfully");
+                    } else {
+                        Log.e("Firestore", "Update status fail", task.getException());
                     }
                 });
     }
