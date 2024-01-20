@@ -1,6 +1,8 @@
 package com.example.poppop.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -8,6 +10,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -28,7 +33,7 @@ import com.google.firebase.firestore.Query;
 
 import java.util.Arrays;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements ChatRecyclerAdapter.OnMessageLongClickListener {
     String chatroomId;
     ChatroomModel chatroomModel;
     ChatRecyclerAdapter adapter;
@@ -39,7 +44,8 @@ public class ChatActivity extends AppCompatActivity {
     ImageButton sendMsgBtn;
     ImageButton backBtn;
     RecyclerView recyclerView;
-    Button unmatchBtn;
+    Button unmatchBtn, reportBtn;
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,7 @@ public class ChatActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.back_btn);
         recyclerView = findViewById(R.id.chat_recycler_view);
         unmatchBtn = findViewById(R.id.unmatchBtn);
+        reportBtn = findViewById(R.id.reportBtn);
 
         FirestoreUserUtils.getUserModelByUid(FirebaseUtils.currentUserId())
                 .addOnSuccessListener(userModel -> {
@@ -98,6 +105,33 @@ public class ChatActivity extends AppCompatActivity {
             unmatchUser();
         });
 
+        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(@NonNull MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onSingleTapUp(@NonNull MotionEvent e) {
+                // Handle the tap event here
+                // You can implement your logic to respond to the tap
+                reportBtn.setVisibility(View.GONE);
+                adapter.clearLongPressState();
+                return true;
+            }
+        });
+
+        recyclerView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+
+    }
+
+    @Override
+    public void onMessageLongClick(ChatMessageModel message) {
+        // Handle the long click event here
+        reportBtn.setVisibility(View.VISIBLE);
+        reportBtn.setOnClickListener(v -> {
+            Toast.makeText(this, "Message: " + message.getMessage() + " (at: " + message.getTimestamp() +")", Toast.LENGTH_SHORT).show();
+        });
     }
 
     void getOrCreateChatroomModel(){
@@ -126,6 +160,7 @@ public class ChatActivity extends AppCompatActivity {
                 .setQuery(query,ChatMessageModel.class).build();
 
         adapter = new ChatRecyclerAdapter(options,getApplicationContext());
+        adapter.setOnMessageLongClickListener(this);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setReverseLayout(true);
         recyclerView.setLayoutManager(manager);
@@ -141,6 +176,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     void sendMessageToUser(String message){
 

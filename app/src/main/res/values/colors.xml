@@ -12,8 +12,12 @@
     <color name="gray">#F1F1F1</color>
     <color name="dark_gray">#606060</color>
     <color name="light_gray">#F2F3F5</color>
+    <color name="btn_text_red">#F81910</color>
+    <color name="btn_gray">#EDE7E1</color>
+    <color name="btn_text_cyan">#1BAAA9</color>
 
 
     <color name="chat_color_sender">#F1F1F1</color>
     <color name="chat_color_receiver">#E0D3FF</color>
+    <color name="chat_color_select">#ED4337</color>
 </resources>
