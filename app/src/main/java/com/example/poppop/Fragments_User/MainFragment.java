@@ -78,12 +78,12 @@ public class MainFragment extends Fragment implements CardStackListener {
                             userListViewModel = new ViewModelProvider(requireActivity(), new UserListViewModelFactory(new FirebaseUtils()))
                                     .get(UserListViewModel.class);
 
-
-
                             // Observe the LiveData in the ViewModel
                             userListViewModel.getUserListWithPref(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
                                 if (userList != null) {
                                     // Update UI or adapter with the new user list
+                                    adapter.setPremium(userModel.getPremium());
+                                    adapter.setCurrentUserId(userModel.getUserId());
                                     adapter.setUserModels(userList);
                                     adapter.notifyDataSetChanged();
                                 }

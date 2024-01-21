@@ -18,6 +18,8 @@ import java.util.List;
 public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.ViewHolder> {
 
     private List<UserModel> userModelList;
+    private String currentUserId;
+    private boolean isPremium = false;
     private int i;
 
     public CardStackAdapter(List<UserModel> userModelList) {
@@ -38,6 +40,14 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         holder.name.setText(userModel.getName());
         holder.age.setText(String.valueOf(userModel.getAge()));
         holder.gender.setText(userModel.getGender());
+
+        if(isPremium && userModel.getLiked_list() != null){
+            if(userModel.getLiked_list().contains(currentUserId)){
+                holder.heart_icon.setVisibility(View.VISIBLE);
+            }
+        }
+        else holder.heart_icon.setVisibility(View.GONE);
+
         holder.setImageIndex(0);
         if(userModel.getImage_list() != null && userModel.getImage_list().size() != 0){
             Glide.with(holder.image)
@@ -81,6 +91,13 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
     public void setUserModels(List<UserModel> userModels) {
         this.userModelList = userModels;
     }
+
+    public void setPremium(boolean b){this.isPremium = b;}
+
+    public void setCurrentUserId(String currentUserId) {
+        this.currentUserId = currentUserId;
+    }
+
     @Override
     public int getItemCount() {
         return userModelList != null ? userModelList.size() : 0;
@@ -98,6 +115,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
 
         TextView name;
         TextView age, gender;
+        ImageView heart_icon;
         ClickableImageView image;
         private int imageIndex;
 
@@ -107,6 +125,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
             age = view.findViewById(R.id.item_age);
             image = view.findViewById(R.id.item_image);
             gender = view.findViewById(R.id.item_gender);
+            heart_icon = view.findViewById(R.id.heart_icon);
             imageIndex = 0;
         }
 
