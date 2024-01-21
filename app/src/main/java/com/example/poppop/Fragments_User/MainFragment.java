@@ -6,14 +6,17 @@ import static com.example.poppop.Utils.FirestoreUserUtils.addUserToSwipedList;
 import static com.example.poppop.Utils.FirestoreUserUtils.removeUserFromDislikedList;
 import static com.example.poppop.Utils.FirestoreUserUtils.removeUserFromLikedList;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -143,6 +146,7 @@ public class MainFragment extends Fragment implements CardStackListener {
                 fcmSender.sendPushToSingleInstance(requireActivity(),swipedUserModel.getFcmToken(),"Common!","You have a match!");
                 NotificationUtils.showLocalNotification(getContext(),"Woohoo", "You have a match!");
                 FirebaseUtils.createEmptyChatroomDocumentWithId(userModel.getUserId(),swipedUserModel.getUserId());
+                showMatchPopup();
             }
         }
         else{
@@ -282,6 +286,18 @@ public class MainFragment extends Fragment implements CardStackListener {
             userModels.add(createUserModel());
         }
         return userModels;
+    }
+    private void showMatchPopup() {
+        View popupView = getLayoutInflater().inflate(R.layout.pop_up_layout, null);
+        ImageView matchImageView = popupView.findViewById(R.id.match_image);
+        matchImageView.setImageResource(R.drawable.AdobeStock_513523396); // Replace with your actual image resource
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(popupView);
+        AlertDialog dialog = builder.create();
+
+        // Show the dialog
+        dialog.show();
+        new Handler().postDelayed(dialog::dismiss, 3000); // Adjust the duration as needed
     }
 
 }
