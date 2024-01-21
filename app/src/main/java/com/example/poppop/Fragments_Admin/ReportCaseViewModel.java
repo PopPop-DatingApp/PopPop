@@ -20,15 +20,19 @@ import java.util.List;
 public class ReportCaseViewModel extends ViewModel {
     private final String TAG = "ReportCaseViewModel";
     private final ReportCaseUtils reportCaseUtils;
-    private final MutableLiveData<List<ReportCaseModel>> reportCaseList = new MutableLiveData<List<ReportCaseModel>>();
-//    private ListenerRegistration userDataListenerRegistration;
+
+    private final MutableLiveData<List<ReportCaseModel>> reportCaseList = new MutableLiveData<>();
+    private final MutableLiveData<ReportCaseModel> singleReportCase = new MutableLiveData<>();
+
+    // ListenerRegistration for the snapshot listener
+    private ListenerRegistration reportCaseListListenerRegistration;
 
     public ReportCaseViewModel(ReportCaseUtils reportCaseUtils) {
         this.reportCaseUtils = reportCaseUtils;
     }
 
     public void listenToReportCaseList() {
-        FirebaseUtils.getAllReportCasesCollectionReference().addSnapshotListener((queryDocumentSnapshots, e) -> {
+        reportCaseListListenerRegistration = FirebaseUtils.getAllReportCasesCollectionReference().addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (e != null) {
                 Log.e(TAG, "Listen failed.", e);
                 reportCaseList.setValue(null);
@@ -51,10 +55,38 @@ public class ReportCaseViewModel extends ViewModel {
         });
     }
 
+    // Method to listen to a single report case by its ID
+    public void listenToSingleReportCase(String reportCaseId) {
+        FirebaseUtils.getReportCaseReference(reportCaseId).addSnapshotListener((documentSnapshot, e) -> {
+            if (e != null) {
+                Log.e(TAG, "Listen failed.", e);
+                singleReportCase.setValue(null);
+                return;
+            }
 
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                ReportCaseModel reportCaseModel = documentSnapshot.toObject(ReportCaseModel.class);
+                singleReportCase.setValue(reportCaseModel);
+            } else {
+                Log.d(TAG, "Current data: null");
+                singleReportCase.setValue(null);
+            }
+        });
+    }
 
     public MutableLiveData<List<ReportCaseModel>> getReportCaseList() {
         return reportCaseList;
     }
 
+    public LiveData<ReportCaseModel> getSingleReportCase() {
+        return singleReportCase;
+    }
+
+    // Clean up the listener when the ViewModel is no longer used
+    @Override
+    protected void onCleared() {
+        if (reportCaseListListenerRegistration != null) {
+            reportCaseListListenerRegistration.remove();
+        }
+    }
 }

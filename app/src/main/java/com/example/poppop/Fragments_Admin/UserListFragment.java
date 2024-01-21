@@ -23,14 +23,15 @@ import com.example.poppop.ViewModel.AdminViewModel;
 import com.example.poppop.ViewModel.AdminViewModelFactory;
 import com.example.poppop.ViewModel.UserListViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserListFragment extends Fragment {
     private static final String TAG = "UserListFragment";
-    RecyclerView recyclerView;
-    private AdminViewModel adminViewModel;
-    private UserListViewModel userListViewModel;
+    private RecyclerView recyclerView;
+    private UserAdapter userAdapter;
 
+    private UserListViewModel userListViewModel;
 
     public UserListFragment() {
         // Required empty public constructor
@@ -39,18 +40,8 @@ public class UserListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adminViewModel = new ViewModelProvider(this, new AdminViewModelFactory(new AdminUtils())).get(AdminViewModel.class);
         userListViewModel = new ViewModelProvider(this).get(UserListViewModel.class);
         userListViewModel.listenToUserList();
-        userListViewModel.getAllUser().observe(this, userModelList -> {
-            if (userModelList != null) {
-                // User data has changed, update your UI accordingly
-                displayUserList(userModelList);
-            } else {
-                // Handle the case where the user data is null or not found
-                Log.d(TAG, "User data is null");
-            }
-        });
     }
 
     @Override
@@ -60,23 +51,26 @@ public class UserListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_list, container, false);
         recyclerView = view.findViewById(R.id.recyclerViewUsers);
 
-        return view;
-    }
-
-    private void displayUserList(List<UserModel> userList) {
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Create and set the adapter
-        UserAdapter userAdapter = new UserAdapter(userList, user -> {
-            // Handle user click
+        userAdapter = new UserAdapter(new ArrayList<>(), user -> {
             Intent intent = new Intent(getContext(), UserDetailsActivity.class);
-//            intent.putExtra("userModel", user);
             intent.putExtra("userId", user.getUserId());
             startActivity(intent);
         });
         recyclerView.setAdapter(userAdapter);
+
+        // Observe the LiveData for user list changes
+        userListViewModel.getAllUser().observe(getViewLifecycleOwner(), userModelList -> {
+            if (userModelList != null) {
+                // User data has changed, update your UI accordingly
+                userAdapter.updateUserList(userModelList);
+            } else {
+                // Handle the case where the user data is null or not found
+                Log.d(TAG, "User data is null");
+            }
+        });
+
+        return view;
     }
-
-
 }

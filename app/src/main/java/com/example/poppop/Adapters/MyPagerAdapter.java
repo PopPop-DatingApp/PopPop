@@ -23,7 +23,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return new ReportCaseFragment();
             case 2:
-                return new UserListFragment();
+                return new ReportCaseFragment();
             default:
                 return null;
         }

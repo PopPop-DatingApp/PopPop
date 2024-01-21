@@ -71,6 +71,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return userList.size();
     }
 
+    // Method to update the user list and refresh the adapter
+    public void updateUserList(List<UserModel> newUserList) {
+        userList.clear();
+        userList.addAll(newUserList);
+        notifyDataSetChanged();
+    }
+
     static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView userName, userId, role, status;
 

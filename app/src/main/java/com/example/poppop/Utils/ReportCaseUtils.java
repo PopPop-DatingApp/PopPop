@@ -37,6 +37,15 @@ public class ReportCaseUtils {
                 .addOnCompleteListener(onCompleteListener);
     }
 
+    public static void updateReportCaseDoneStatus(String reportCaseId, boolean isDone, OnCompleteListener<Void> onCompleteListener) {
+        // Get the reference to the specific document using the reportCaseId
+        DocumentReference documentReference = FirebaseUtils.getReportCaseReference(reportCaseId);
+
+        // Update the "done" field in the document
+        documentReference.update("done", isDone)
+                .addOnCompleteListener(onCompleteListener);
+    }
+
     public static Task<ReportCaseModel> getReportCaseById(String reportCaseId) {
         // Retrieve a document from the "reportCases" collection based on reportCaseId
         DocumentReference docRef = FirebaseUtils.getAllReportCasesCollectionReference().document(reportCaseId);

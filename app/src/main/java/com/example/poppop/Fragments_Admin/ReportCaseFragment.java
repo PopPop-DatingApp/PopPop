@@ -15,7 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.poppop.Activities.ReportCaseDetailActivity;
 import com.example.poppop.Activities.UserDetailsActivity;
 import com.example.poppop.Adapters.ReportCaseAdapter;
 import com.example.poppop.Adapters.UserAdapter;
@@ -32,12 +34,14 @@ public class ReportCaseFragment extends Fragment {
 
     private ReportCaseViewModel mViewModel;
     private RecyclerView recyclerView;
+    private TextView no_data_textview;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_report_case, container, false);
         recyclerView = view.findViewById(R.id.recyclerViewReport);
+        no_data_textview = view.findViewById(R.id.no_data_text);
         return view;
     }
 
@@ -48,12 +52,12 @@ public class ReportCaseFragment extends Fragment {
         mViewModel.listenToReportCaseList();
         mViewModel.getReportCaseList().observe(this, reportCaseModels -> {
             if (reportCaseModels != null) {
-                // User data has changed, update your UI accordingly
                 Log.d(TAG, reportCaseModels.get(0).getReporterId());
+                no_data_textview.setVisibility(View.GONE);
                 displayReport(reportCaseModels);
             } else {
-                // Handle the case where the user data is null or not found
-                Log.d(TAG, "User data is null");
+                no_data_textview.setVisibility(View.VISIBLE);
+                Log.d(TAG, "Report data is null");
             }
         });
     }
@@ -65,9 +69,9 @@ public class ReportCaseFragment extends Fragment {
         // Create and set the adapter
         ReportCaseAdapter reportCaseAdapter = new ReportCaseAdapter(reportCaseModels, reportCaseModel -> {
             // Handle user click
-            Intent intent = new Intent(getContext(), UserDetailsActivity.class);
+            Intent intent = new Intent(getContext(), ReportCaseDetailActivity.class);
 //            intent.putExtra("userModel", user);
-//            intent.putExtra("userId", user.getUserId());
+            intent.putExtra("reportCaseId", reportCaseModel.getReportCaseId());
             startActivity(intent);
         });
         recyclerView.setAdapter(reportCaseAdapter);

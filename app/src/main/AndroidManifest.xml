@@ -20,6 +20,9 @@
         android:theme="@style/Theme.PopPop"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.ReportCaseDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.UserDetailsActivity"
             android:exported="false" />
         <activity
