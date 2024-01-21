@@ -1,5 +1,7 @@
 package com.example.poppop.Utils;
 
+import android.widget.Toast;
+
 import com.example.poppop.Model.ReportCaseModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,8 +24,6 @@ public class ReportCaseUtils {
 
                         // Now, update the document with the generated ID
                         updateReportCaseWithId(generatedId, onCompleteListener);
-                    } else {
-
                     }
                 });
     }

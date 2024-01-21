@@ -38,7 +38,26 @@ public class ReportCaseAdapter extends RecyclerView.Adapter<ReportCaseAdapter.Re
         ReportCaseModel reportCase = reportCaseList.get(position);
 
         holder.caseId.setText(reportCase.getReportCaseId());
-        holder.caseTime.setText(Utils.timestampToString(reportCase.getReportTime()));
+        holder.caseTime.setText(Utils.timestampToDateAndTime(reportCase.getReportTime()));
+        final String[] offenderName = {"Offender: ..."};
+        final String[] reporterName = {"Reporter: ..."};
+        FirestoreUserUtils.getUserModelByUid(reportCase.getOffenderId())
+                .addOnSuccessListener(userModel -> {
+                    if(userModel != null){
+                        offenderName[0] = "Offender: " + userModel.getName();
+                        holder.offender.setText(offenderName[0]);
+                    }
+                });
+
+        FirestoreUserUtils.getUserModelByUid(reportCase.getReporterId())
+                .addOnSuccessListener(userModel -> {
+                    if(userModel != null){
+                        reporterName[0] = "Reporter: " + userModel.getName();
+                        holder.reporter.setText(reporterName[0]);
+                    }
+                });
+        holder.reporter.setText(reporterName[0]);
+        holder.offender.setText(offenderName[0]);
 
         // Handle item click
         holder.itemView.setOnClickListener(v -> {

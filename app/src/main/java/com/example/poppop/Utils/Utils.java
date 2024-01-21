@@ -19,6 +19,7 @@ import com.google.firebase.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class Utils {
     public static List<String> getHoroscopeSigns() {
@@ -43,6 +44,11 @@ public class Utils {
     public static String timestampToString(Timestamp timestamp){
         return new SimpleDateFormat("HH:mm").format(timestamp.toDate());
     }
+
+    public static String timestampToDateAndTime(Timestamp timestamp) {
+        return new SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault()).format(timestamp.toDate());
+    }
+
 
     public static void checkNotificationPermission(Activity activity, Context context){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
