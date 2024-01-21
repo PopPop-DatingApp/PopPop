@@ -462,7 +462,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         // If the update is successful, start the new activity
-                                        Toast.makeText(this, "Update successfully", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(this, "Update successfully", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(EditProfileActivity.this, MainActivity.class));
                                     } else {
                                         Toast.makeText(this, "Fail to update", Toast.LENGTH_SHORT).show();

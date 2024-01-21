@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                                 if (user != null) {
                                     FirestoreUserUtils.checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
-                                            Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
+                                            //Toast.makeText(LoginActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                                             UserModel userModel = task1.getResult();
                                             if (userModel != null && userModel.getAdmin() != null && userModel.getAdmin()) {
                                                 // Handle admin login
@@ -83,11 +83,11 @@ public class LoginActivity extends AppCompatActivity {
                                                 }
                                                 FirestoreUserUtils.updateFCMTokenForUser(userModel)
                                                         .thenAccept(result -> {
-                                                            Toast.makeText(LoginActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
+                                                            Log.d(TAG, "FCM Token saved successfully");
                                                         })
                                                         .exceptionally(throwable -> {
                                                             Log.e("FCM token update", "Failed: " + throwable.getMessage());
-                                                            Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
+                                                            //Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
                                                             return null;
                                                         });
                                             }
@@ -159,17 +159,17 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             FirestoreUserUtils.updateFCMTokenForUser(userModel)
                                     .thenAccept(result -> {
-                                        Toast.makeText(LoginActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
+                                        Log.d("FCM token update", "success");
                                     })
                                     .exceptionally(throwable -> {
                                         Log.e("FCM token update", "Failed: " + throwable.getMessage());
-                                        Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(LoginActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
                                         return null;
                                     });
                         } else {
                             Exception exception = task1.getException();
                             Log.e("exception", exception.toString());
-                            Toast.makeText(LoginActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(LoginActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

@@ -1,5 +1,7 @@
 package com.example.poppop.Utils;
 
+import static com.google.firebase.appcheck.internal.util.Logger.TAG;
+
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -34,8 +36,8 @@ public class FCMSender {
         final String url = "https://fcm.googleapis.com/v1/projects/poppop-datingapp/messages:send";
         // Replace YOUR_PROJECT_ID with your Firebase project ID
         StringRequest myReq = new StringRequest(Request.Method.POST, url,
-                response -> Toast.makeText(activity, "Sent notification to owner", Toast.LENGTH_SHORT).show(),
-                error -> Toast.makeText(activity, "Oops error sending notification!!!", Toast.LENGTH_SHORT).show()) {
+                response -> Log.d(TAG, "sendPushToSingleInstance: success"),
+                error -> Log.e(TAG, "Oops error sending notification!!!")) {
 
             @Override
             public byte[] getBody() throws com.android.volley.AuthFailureError {
