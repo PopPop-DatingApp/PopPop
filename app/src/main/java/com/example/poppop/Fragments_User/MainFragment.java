@@ -171,10 +171,6 @@ public class MainFragment extends Fragment implements CardStackListener {
         }
         // Add swipedUserModel to the swiped_list of the current user
         addUserToSwipedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId());
-
-        if (manager.getTopPosition() == adapter.getItemCount()) {
-            paginate();
-        }
     }
 
     @Override
@@ -234,23 +230,6 @@ public class MainFragment extends Fragment implements CardStackListener {
             manager.setSwipeAnimationSetting(setting);
             cardStackView.swipe();
         });
-    }
-
-    private void paginate() {
-        List<UserModel> oldUserModels = adapter.getUserModels();
-
-        if (oldUserModels != null) {
-            userListViewModel.getUserListWithPref(userModel, userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
-                if (userList != null) {
-                    // Update UI or adapter with the new user list
-                    UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, userList);
-                    DiffUtil.DiffResult result = DiffUtil.calculateDiff(callback);
-                    adapter.setUserModels(userList);
-                    result.dispatchUpdatesTo(adapter);
-                    adapter.notifyDataSetChanged();
-                }
-            });
-        }
     }
 
     private UserModel createUserModel() {
