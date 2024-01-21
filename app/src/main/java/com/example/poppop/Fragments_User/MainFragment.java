@@ -62,7 +62,6 @@ public class MainFragment extends Fragment implements CardStackListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         initializeFragmentView(view);
-        setupCardStackView(view);
         setupButton(view);
         fcmSender = new FCMSender(requireContext());
         return view;
@@ -70,6 +69,16 @@ public class MainFragment extends Fragment implements CardStackListener {
 
     private void initializeFragmentView(View view) {
         if (view != null) {
+            manager = new CardStackLayoutManager(requireContext(), this);
+            // Rest of the initialization code...
+
+            cardStackView = view.findViewById(R.id.card_stack_view);
+            if (manager != null) {
+                cardStackView.setLayoutManager(manager);
+            } else {
+                // Handle the case where manager is null
+                Log.e("CardStackView", "CardStackLayoutManager is null");
+            }
             DocumentReference userDocRef = FirebaseUtils.getUserReference(FirebaseUtils.currentUserId());
             userDocRef.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -88,13 +97,21 @@ public class MainFragment extends Fragment implements CardStackListener {
                                     .get(UserListViewModel.class);
 
                             // Observe the LiveData in the ViewModel
-                            userListViewModel.getUserListWithPref(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+                            userListViewModel.getUserListWithPref(userModel, userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
                                 if (userList != null) {
                                     // Update UI or adapter with the new user list
+                                    adapter = new CardStackAdapter(userList);
+                                    cardStackView.setAdapter(adapter);
+                                    cardStackView.setItemAnimator(new DefaultItemAnimator());
                                     adapter.setPremium(userModel.getPremium());
                                     adapter.setCurrentUserId(userModel.getUserId());
                                     adapter.setUserModels(userList);
                                     adapter.notifyDataSetChanged();
+                                    TextView textView = view.findViewById(R.id.result_text);
+
+                                    if(userList.size() == 0){
+                                        textView.setVisibility(View.VISIBLE);
+                                    } else textView.setVisibility(View.GONE);
                                 }
                             });
                         } else {
@@ -182,10 +199,6 @@ public class MainFragment extends Fragment implements CardStackListener {
         Log.d("CardStackView", "onCardDisappeared: (" + position + ") " + textView.getText());
     }
 
-    private void setupCardStackView(View view) {
-        initialize(view);
-    }
-
     private void setupButton(View view) {
         View skip = view.findViewById(R.id.skip_button);
         skip.setOnClickListener(v -> {
@@ -223,27 +236,11 @@ public class MainFragment extends Fragment implements CardStackListener {
         });
     }
 
-    private void initialize(View view) {
-        manager = new CardStackLayoutManager(requireContext(), this);
-        // Rest of the initialization code...
-
-        cardStackView = view.findViewById(R.id.card_stack_view);
-        if (manager != null) {
-            cardStackView.setLayoutManager(manager);
-        } else {
-            // Handle the case where manager is null
-            Log.e("CardStackView", "CardStackLayoutManager is null");
-        }
-        adapter = new CardStackAdapter(createUserModels());
-        cardStackView.setAdapter(adapter);
-        cardStackView.setItemAnimator(new DefaultItemAnimator());
-    }
-
     private void paginate() {
         List<UserModel> oldUserModels = adapter.getUserModels();
 
         if (oldUserModels != null) {
-            userListViewModel.getUserListWithPref(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
+            userListViewModel.getUserListWithPref(userModel, userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
                 if (userList != null) {
                     // Update UI or adapter with the new user list
                     UserModelDiffCallback callback = new UserModelDiffCallback(oldUserModels, userList);
@@ -253,9 +250,6 @@ public class MainFragment extends Fragment implements CardStackListener {
                     adapter.notifyDataSetChanged();
                 }
             });
-            List<UserModel> newUserModels = new ArrayList<>(oldUserModels);
-            newUserModels.addAll(createUserModels()); // Assuming createUserModels() returns a list of new UserModels
-
         }
     }
 
