@@ -37,6 +37,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         UserModel userModel = userModelList.get(position);
         holder.name.setText(userModel.getName());
         holder.age.setText(String.valueOf(userModel.getAge()));
+        holder.gender.setText(userModel.getGender());
         holder.setImageIndex(0);
         if(userModel.getImage_list() != null && userModel.getImage_list().size() != 0){
             Glide.with(holder.image)
@@ -96,7 +97,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView name;
-        TextView age;
+        TextView age, gender;
         ClickableImageView image;
         private int imageIndex;
 
@@ -105,6 +106,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
             name = view.findViewById(R.id.item_name);
             age = view.findViewById(R.id.item_age);
             image = view.findViewById(R.id.item_image);
+            gender = view.findViewById(R.id.item_gender);
             imageIndex = 0;
         }
 
