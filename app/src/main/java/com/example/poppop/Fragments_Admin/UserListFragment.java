@@ -14,14 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.poppop.Activities.AdminActivity;
+import com.example.poppop.Activities.ReportCaseDetailActivity;
 import com.example.poppop.Activities.UserDetailsActivity;
+import com.example.poppop.Adapters.ReportCaseAdapter;
 import com.example.poppop.Adapters.UserAdapter;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.AdminUtils;
+import com.example.poppop.Utils.FirebaseUtils;
+import com.example.poppop.Utils.ReportCaseUtils;
 import com.example.poppop.ViewModel.AdminViewModel;
 import com.example.poppop.ViewModel.AdminViewModelFactory;
 import com.example.poppop.ViewModel.UserListViewModel;
+import com.example.poppop.ViewModel.UserListViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +34,25 @@ import java.util.List;
 public class UserListFragment extends Fragment {
     private static final String TAG = "UserListFragment";
     private RecyclerView recyclerView;
-    private UserAdapter userAdapter;
-
     private UserListViewModel userListViewModel;
-
-    public UserListFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userListViewModel = new ViewModelProvider(this).get(UserListViewModel.class);
+        userListViewModel = new ViewModelProvider(requireActivity(), new UserListViewModelFactory(new FirebaseUtils())).get(UserListViewModel.class);
         userListViewModel.listenToUserList();
+        // Observe the LiveData for user list changes
+        userListViewModel.getAllUser().observe(this, userModelList -> {
+            if (userModelList != null) {
+                Log.d(TAG, "User data size: " + userModelList.size());
+                // User data has changed, update your UI accordingly
+                displayUserList(userModelList);
+            } else {
+                // Handle the case where the user data is null or not found
+                Log.d(TAG, "User data is null");
+            }
+        });
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,26 +60,20 @@ public class UserListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_list, container, false);
         recyclerView = view.findViewById(R.id.recyclerViewUsers);
 
+        return view;
+    }
+
+    private void displayUserList(List<UserModel> userModelList) {
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        userAdapter = new UserAdapter(new ArrayList<>(), user -> {
+
+        // Create and set the adapter
+        UserAdapter userAdapter = new UserAdapter(userModelList, userModel -> {
+            // Handle user click
             Intent intent = new Intent(getContext(), UserDetailsActivity.class);
-            intent.putExtra("userId", user.getUserId());
+            intent.putExtra("userId", userModel.getUserId());
             startActivity(intent);
         });
         recyclerView.setAdapter(userAdapter);
-
-        // Observe the LiveData for user list changes
-        userListViewModel.getAllUser().observe(getViewLifecycleOwner(), userModelList -> {
-            if (userModelList != null) {
-                // User data has changed, update your UI accordingly
-                userAdapter.updateUserList(userModelList);
-            } else {
-                // Handle the case where the user data is null or not found
-                Log.d(TAG, "User data is null");
-            }
-        });
-
-        return view;
     }
 }

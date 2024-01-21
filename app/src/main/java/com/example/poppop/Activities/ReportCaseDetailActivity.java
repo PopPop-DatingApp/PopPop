@@ -52,7 +52,6 @@ public class ReportCaseDetailActivity extends AppCompatActivity {
 
         // Get the report case ID from the Intent
         String reportCaseId = getIntent().getStringExtra("reportCaseId");
-        Log.d(TAG, reportCaseId);
 
         // Initialize ViewModel
         reportCaseViewModel = new ViewModelProvider(this, new ReportCaseViewModelFactory(new ReportCaseUtils())).get(ReportCaseViewModel.class);

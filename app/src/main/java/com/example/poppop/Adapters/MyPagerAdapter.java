@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.example.poppop.Fragments_Admin.HistoryFragment;
 import com.example.poppop.Fragments_Admin.ReportCaseFragment;
 import com.example.poppop.Fragments_Admin.UserListFragment;
 
@@ -22,16 +23,16 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
                 return new UserListFragment();
             case 1:
                 return new ReportCaseFragment();
-            case 2:
-                return new ReportCaseFragment();
+//            case 2:
+//                return new HistoryFragment();
             default:
-                return null;
+                return new UserListFragment();
         }
     }
 
     @Override
     public int getCount() {
-        return 3; // Number of tabs
+        return 2; // Number of tabs
     }
 
     @Override
@@ -42,8 +43,8 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
                 return "User List";
             case 1:
                 return "Report cases";
-            case 2:
-                return "History";
+//            case 2:
+//                return "History";
             default:
                 return null;
         }

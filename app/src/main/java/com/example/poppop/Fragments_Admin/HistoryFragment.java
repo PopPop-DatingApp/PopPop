@@ -1,13 +1,12 @@
 package com.example.poppop.Fragments_Admin;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,40 +17,30 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.poppop.Activities.ReportCaseDetailActivity;
-import com.example.poppop.Activities.UserDetailsActivity;
 import com.example.poppop.Adapters.ReportCaseAdapter;
-import com.example.poppop.Adapters.UserAdapter;
 import com.example.poppop.Model.ReportCaseModel;
-import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
-import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.ReportCaseUtils;
+import com.example.poppop.ViewModel.HistoryViewModel;
 
 import java.util.List;
 
-public class ReportCaseFragment extends Fragment {
-    private final String TAG = "ReportCaseFragment";
+public class HistoryFragment extends Fragment {
 
-    private ReportCaseViewModel mViewModel;
+    private final String TAG = "HistoryFragment";
+
+    private HistoryViewModel mViewModel;
     private RecyclerView recyclerView;
     private TextView no_data_textview;
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_report_case, container, false);
-        recyclerView = view.findViewById(R.id.recyclerViewReport);
-        no_data_textview = view.findViewById(R.id.no_data_text);
-        return view;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(requireActivity(), new ReportCaseViewModelFactory(new ReportCaseUtils())).get(ReportCaseViewModel.class);
+        Log.d(TAG, "HistoryFragment onCreate");
+        mViewModel = new ViewModelProvider(requireActivity(), new ReportCaseViewModelFactory(new ReportCaseUtils())).get(HistoryViewModel.class);
         mViewModel.listenToReportCaseList();
-        mViewModel.getPendingReportCases().observe(this, reportCaseModels -> {
+        mViewModel.getCompletedReportCases().observe(this, reportCaseModels -> {
             if (reportCaseModels != null) {
+                Log.d(TAG, "User data size: " + reportCaseModels.size());
                 no_data_textview.setVisibility(View.GONE);
                 displayReport(reportCaseModels);
             } else {
@@ -59,6 +48,15 @@ public class ReportCaseFragment extends Fragment {
                 Log.d(TAG, "Report data is null");
             }
         });
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,@Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        recyclerView = view.findViewById(R.id.recyclerViewReport);
+        no_data_textview = view.findViewById(R.id.no_data_text);
+        return view;
     }
 
     private void displayReport(List<ReportCaseModel> reportCaseModels) {
@@ -75,5 +73,4 @@ public class ReportCaseFragment extends Fragment {
         });
         recyclerView.setAdapter(reportCaseAdapter);
     }
-
 }
