@@ -42,7 +42,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserModel user = userList.get(position);
 
-        String role = "Role: " + (user.getPremium() ? REGULAR : PREMIUM);
+        Boolean premium = user.getPremium();
+        String role = "Role: " + ((premium != null && premium) ? PREMIUM : REGULAR);
+
         holder.role.setText(role);
         String status;
         if(user.getBanned() != null && user.getBanned()){
@@ -67,6 +69,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public int getItemCount() {
         return userList.size();
+    }
+
+    // Method to update the user list and refresh the adapter
+    public void updateUserList(List<UserModel> newUserList) {
+        userList.clear();
+        userList.addAll(newUserList);
+        notifyDataSetChanged();
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {

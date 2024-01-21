@@ -1,4 +1,4 @@
-package com.example.poppop.Fragments;
+package com.example.poppop.Fragments_User;
 
 import android.content.Intent;
 import android.os.Bundle;
