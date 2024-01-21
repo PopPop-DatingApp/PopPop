@@ -329,47 +329,80 @@ public class FirestoreUserUtils {
                         String profileString = document.getString("profile");
                         // Update the "photoUrl" field with the string from "profile"
                         userRef.update("photoUrl", profileString)
-                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "photoUrl updated successfully"))
-                                .addOnFailureListener(e -> Log.e("Firestore", "Error updating photoUrl", e));
+                                .addOnSuccessListener(aVoid -> Log.d("FirebaseUserUtils", "photoUrl updated successfully"))
+                                .addOnFailureListener(e -> Log.e("FirebaseUserUtils", "Error updating photoUrl", e));
                     } else{
                         userRef.update("photoUrl", firstImageUrl)
-                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "photoUrl updated successfully"))
-                                .addOnFailureListener(e -> Log.e("Firestore", "Error updating photoUrl", e));
+                                .addOnSuccessListener(aVoid -> Log.d("FirebaseUserUtils", "photoUrl updated successfully"))
+                                .addOnFailureListener(e -> Log.e("FirebaseUserUtils", "Error updating photoUrl", e));
                     }
                 } else {
-                    Log.e("Firestore", "Document does not exist");
+                    Log.e("FirebaseUserUtils", "Document does not exist");
                 }
             } else {
-                Log.e("Firestore", "Error getting document", snapshotTask.getException());
+                Log.e("FirebaseUserUtils", "Error getting document", snapshotTask.getException());
             }
         });
     }
 
-    public static void addUserToLikedList(String currentUserId, String likedUserId, Boolean isListNull) {
+    public static void addUserToLikedList(String currentUserId, String likedUserId) {
         // Get reference to the current user's document in the "users" collection
         DocumentReference currentUserRef = FirebaseUtils.getUserReference(currentUserId);
-        if(isListNull){
-            List<String> initialLikedList = new ArrayList<>();
-            initialLikedList.add(likedUserId);
 
-            // Update the liked_list in the database
-            currentUserRef.update("liked_list", initialLikedList)
-                    .addOnSuccessListener(aVoid -> Log.d("FirebaseUtils", "User added to liked_list"))
-                    .addOnFailureListener(e -> Log.e("FirebaseUtils", "Error adding user to liked_list", e));
-        }else{
-            // Atomically add the likedUserId to the liked_list if not already present
-            currentUserRef.update("liked_list", FieldValue.arrayUnion(likedUserId))
-                    .addOnSuccessListener(aVoid -> Log.d("FirebaseUtils", "User added to liked_list"))
-                    .addOnFailureListener(e -> Log.e("FirebaseUtils", "Error adding user to liked_list", e));
-        }
+        // Use arrayUnion to add the likedUserId to the liked_list if not already present
+        currentUserRef.update("liked_list", FieldValue.arrayUnion(likedUserId))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseUserUtils", "User added to liked_list");
+                    // Remove from disliked_list if user is present
+                    removeUserFromDislikedList(currentUserId, likedUserId);
+                })
+                .addOnFailureListener(e -> Log.e("FirebaseUserUtils", "Error adding user to liked_list", e));
     }
+
+
+    public static void addUserToSwipedList(String currentUserId, String swipedUserId) {
+        // Get reference to the current user's document in the "users" collection
+        DocumentReference currentUserRef = FirebaseUtils.getUserReference(currentUserId);
+
+        // Use arrayUnion to add the swipedUserId to the swiped_list if not already present
+        currentUserRef.update("swiped_list", FieldValue.arrayUnion(swipedUserId))
+                .addOnSuccessListener(aVoid -> Log.d("FirebaseUserUtils", "User added to swiped_list"))
+                .addOnFailureListener(e -> Log.e("FirebaseUserUtils", "Error adding user to swiped_list", e));
+    }
+
+    public static void addUserToDisLikedList(String currentUserId, String dislikedUserId) {
+        // Get reference to the current user's document in the "users" collection
+        DocumentReference currentUserRef = FirebaseUtils.getUserReference(currentUserId);
+
+        // Use arrayUnion to add the dislikedUserId to the disliked_list if not already present
+        currentUserRef.update("disliked_list", FieldValue.arrayUnion(dislikedUserId))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseUserUtils", "User added to disliked_list");
+                    // Remove from liked_list if user is present
+                    removeUserFromLikedList(currentUserId, dislikedUserId);
+                })
+                .addOnFailureListener(e -> Log.e("FirebaseUserUtils", "Error adding user to disliked_list", e));
+    }
+
+
     public static void removeUserFromLikedList(String currentUserId, String unlikedUserId) {
         // Get reference to the current user's document in the "users" collection
         DocumentReference currentUserRef = FirebaseUtils.getUserReference(currentUserId);
 
         // Atomically remove the unlikedUserId from the liked_list
         currentUserRef.update("liked_list", FieldValue.arrayRemove(unlikedUserId))
-                .addOnSuccessListener(aVoid -> Log.d("FirebaseUtils", "User removed from liked_list"))
-                .addOnFailureListener(e -> Log.e("FirebaseUtils", "Error removing user from liked_list", e));
+                .addOnSuccessListener(aVoid -> Log.d("FirebaseUserUtils", "User removed from liked_list"))
+                .addOnFailureListener(e -> Log.e("FirebaseUserUtils", "Error removing user from liked_list", e));
     }
+
+    public static void removeUserFromDislikedList(String currentUserId, String dislikedUserId) {
+        // Get reference to the current user's document in the "users" collection
+        DocumentReference currentUserRef = FirebaseUtils.getUserReference(currentUserId);
+
+        // Atomically remove the dislikedUserId from the disliked_list if present
+        currentUserRef.update("disliked_list", FieldValue.arrayRemove(dislikedUserId))
+                .addOnSuccessListener(aVoid -> Log.d("FirebaseUserUtils", "User removed from disliked_list"))
+                .addOnFailureListener(e -> Log.e("FirebaseUserUtils", "Error removing user from disliked_list", e));
+    }
+
 }

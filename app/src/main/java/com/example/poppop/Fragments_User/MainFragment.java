@@ -1,5 +1,11 @@
 package com.example.poppop.Fragments_User;
 
+import static com.example.poppop.Utils.FirestoreUserUtils.addUserToDisLikedList;
+import static com.example.poppop.Utils.FirestoreUserUtils.addUserToLikedList;
+import static com.example.poppop.Utils.FirestoreUserUtils.addUserToSwipedList;
+import static com.example.poppop.Utils.FirestoreUserUtils.removeUserFromDislikedList;
+import static com.example.poppop.Utils.FirestoreUserUtils.removeUserFromLikedList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,14 +21,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 
+import com.example.poppop.Activities.EditProfileActivity;
 import com.example.poppop.Adapters.CardStackAdapter;
 import com.example.poppop.Adapters.UserModelDiffCallback;
-import com.example.poppop.Activities.EditProfileActivity;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.R;
 import com.example.poppop.Utils.FCMSender;
 import com.example.poppop.Utils.FirebaseUtils;
-import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.NotificationUtils;
 import com.example.poppop.ViewModel.UserListViewModel;
 import com.example.poppop.ViewModel.UserListViewModelFactory;
@@ -35,6 +40,7 @@ import com.example.poppop.cardstackview.RewindAnimationSetting;
 import com.example.poppop.cardstackview.SwipeAnimationSetting;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,18 +131,11 @@ public class MainFragment extends Fragment implements CardStackListener {
 
     @Override
     public void onCardSwiped(Direction direction) {
-        Log.d("CardStackView", "onCardSwiped: p = " + manager.getTopPosition() + ", d = " + direction);
+        int swipedPosition = manager.getTopPosition();
+        UserModel swipedUserModel = adapter.getUserModels().get(swipedPosition - 1); // Adjust for zero-based index
         if(direction.equals(Direction.Right)){
-            int swipedPosition = manager.getTopPosition();
-            UserModel swipedUserModel = adapter.getUserModels().get(swipedPosition - 1); // Adjust for zero-based index
-
             // Add swipedUserModel to the liked_list of the current user
-            if(userModel.getLiked_list() == null) {
-                FirestoreUserUtils.addUserToLikedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId(), true);
-            }
-            else if(!userModel.getLiked_list().contains(swipedUserModel.getUserId())) {
-                FirestoreUserUtils.addUserToLikedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId(), false);
-            }
+            addUserToLikedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId());
 
             // Check if the current user is in the swiped user's liked_list
             if (swipedUserModel.getLiked_list() != null && swipedUserModel.getLiked_list().contains(FirebaseUtils.currentUserId())) {
@@ -146,6 +145,12 @@ public class MainFragment extends Fragment implements CardStackListener {
                 FirebaseUtils.createEmptyChatroomDocumentWithId(userModel.getUserId(),swipedUserModel.getUserId());
             }
         }
+        else{
+            addUserToDisLikedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId());
+        }
+        // Add swipedUserModel to the swiped_list of the current user
+        addUserToSwipedList(FirebaseUtils.currentUserId(), swipedUserModel.getUserId());
+
         if (manager.getTopPosition() == adapter.getItemCount()) {
             paginate();
         }
