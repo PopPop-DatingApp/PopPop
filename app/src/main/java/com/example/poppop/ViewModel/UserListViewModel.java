@@ -6,10 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.poppop.Model.ReportCaseModel;
 import com.example.poppop.Model.UserModel;
 import com.example.poppop.Utils.FirebaseUtils;
-import com.example.poppop.Utils.FirestoreUserUtils;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -78,11 +76,11 @@ public class UserListViewModel extends ViewModel {
             // Fetch data only if it hasn't been loaded before or if the list is empty
             CollectionReference usersRef = FirebaseUtils.getAllUsersCollectionReference();
 
-            getNearbyMaleUsers(usersRef, currentUserId, userLocation, genderPref, maxDist, ageRangePref);
+            getUsersWithPref(usersRef, currentUserId, userLocation, genderPref, maxDist, ageRangePref);
         }
     }
 
-    private void getNearbyMaleUsers(CollectionReference usersCollection, String currentUserId, GeoPoint myLocation, String genderPref, int maxDist, List<Integer> ageRangePref) {
+    private void getUsersWithPref(CollectionReference usersCollection, String currentUserId, GeoPoint myLocation, String genderPref, int maxDist, List<Integer> ageRangePref) {
         int minAge = ageRangePref.get(0);
         int maxAge = ageRangePref.get(1);
         double maxDistFloat = 0.0 + maxDist;
@@ -102,14 +100,11 @@ public class UserListViewModel extends ViewModel {
                                         || isWithinAgeRange(user.getAge(), minAge, maxAge)) {
                                     nearbyMaleUsers.add(user);
                                 }
-
                             }
 
                             //Sort theo diem
-
                             userList.setValue(nearbyMaleUsers);
 
-                            // Process the nearbyMaleUsers list
                         } else {
                             // Handle the error
                         }
@@ -136,11 +131,6 @@ public class UserListViewModel extends ViewModel {
                                         || isWithinAgeRange(user.getAge(), minAge, maxAge)) {
                                     nearbyMaleUsers.add(user);
                                 }
-
-//                                // Limit to 10 users
-//                                if (nearbyMaleUsers.size() >= 10) {
-//                                    break;
-//                                }
                             }
 
                             //Sort theo diem
