@@ -17,6 +17,7 @@
     <color name="btn_text_cyan">#1BAAA9</color>
     <color name="btn_green">#1F423F</color>
     <color name="btn_text_green">#4EC74B</color>
+    <color name="apppink">#FA628D</color>
 
     <color name="chat_color_sender">#F1F1F1</color>
     <color name="chat_color_receiver">#E0D3FF</color>
