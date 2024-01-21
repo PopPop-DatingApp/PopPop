@@ -25,6 +25,7 @@ import com.example.poppop.Utils.FirebaseUtils;
 import com.example.poppop.Utils.FirestoreUserUtils;
 import com.example.poppop.Utils.NotificationUtils;
 import com.example.poppop.ViewModel.UserListViewModel;
+import com.example.poppop.ViewModel.UserListViewModelFactory;
 import com.example.poppop.cardstackview.CardStackLayoutManager;
 import com.example.poppop.cardstackview.CardStackListener;
 import com.example.poppop.cardstackview.CardStackView;
@@ -45,6 +46,7 @@ public class MainFragment extends Fragment implements CardStackListener {
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
     private UserModel userModel;
+    View rewind;
     FCMSender fcmSender;
 
     @Override
@@ -67,9 +69,16 @@ public class MainFragment extends Fragment implements CardStackListener {
                         userModel = documentSnapshot.toObject(UserModel.class);
                         if (userModel != null && userModel.getGenderPref() != null) {
                             //set up UI
+                            if(!userModel.getPremium())
+                                rewind.setVisibility(View.INVISIBLE);
+                            else rewind.setVisibility(View.VISIBLE);
                             // Initialize the ViewModel using ViewModelProvider with AndroidViewModelFactory
-                            userListViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
+//                            userListViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
+//                                    .get(UserListViewModel.class);
+                            userListViewModel = new ViewModelProvider(requireActivity(), new UserListViewModelFactory(new FirebaseUtils()))
                                     .get(UserListViewModel.class);
+
+
 
                             // Observe the LiveData in the ViewModel
                             userListViewModel.getUserListWithPref(FirebaseUtils.currentUserId(), userModel.getCurrentLocation(), userModel.getGenderPref(), userModel.getMaxDistPref(), userModel.getAgeRangePref()).observe(getViewLifecycleOwner(), userList -> {
@@ -181,7 +190,7 @@ public class MainFragment extends Fragment implements CardStackListener {
             cardStackView.swipe();
         });
 
-        View rewind = view.findViewById(R.id.rewind_button);
+        rewind = view.findViewById(R.id.rewind_button);
         rewind.setOnClickListener(v -> {
             RewindAnimationSetting setting = new RewindAnimationSetting.Builder()
                     .setDirection(Direction.Bottom)
@@ -191,6 +200,7 @@ public class MainFragment extends Fragment implements CardStackListener {
             manager.setRewindAnimationSetting(setting);
             cardStackView.rewind();
         });
+
 
         View like = view.findViewById(R.id.like_button);
         like.setOnClickListener(v -> {
