@@ -23,12 +23,25 @@ public class boardingGender extends AppCompatActivity {
         Button nextButton = findViewById(R.id.boardingGenderBtn);
 
         // Assuming you passed the user data from the previous activity
+        maleImageView.setAlpha(0.5f);
+        femaleImageView.setAlpha(0.5f);
+
+        // Assuming you passed the user data from the previous activity
         userName = getIntent().getStringExtra("userName");
         userAge = getIntent().getIntExtra("userAge", 18);
 
-        maleImageView.setOnClickListener(v -> userGender = "Male");
+        maleImageView.setOnClickListener(v -> {
+            userGender = "Male";
+            maleImageView.setAlpha(1.0f);
+            femaleImageView.setAlpha(0.5f);
+        });
 
-        femaleImageView.setOnClickListener(v -> userGender = "Female");
+        femaleImageView.setOnClickListener(v -> {
+            userGender = "Female";
+            maleImageView.setAlpha(0.5f);
+            femaleImageView.setAlpha(1.0f);
+        });
+
 
         nextButton.setOnClickListener(v -> {
             // When the button is clicked, transfer all data to the next activity

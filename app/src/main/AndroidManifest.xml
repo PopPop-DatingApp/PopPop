@@ -59,20 +59,22 @@
             android:value="true" />
 
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".boardingpages.horoscopeBoarding"
-            android:exported="false" />
+            android:exported="false"/>
+
         <activity
             android:name=".boardingpages.boardingGender"
             android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+            
         <activity
             android:name=".boardingpages.hobbyBoarding"
             android:exported="false" />
