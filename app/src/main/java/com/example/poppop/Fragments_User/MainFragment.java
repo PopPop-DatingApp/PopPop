@@ -290,7 +290,7 @@ public class MainFragment extends Fragment implements CardStackListener {
     private void showMatchPopup() {
         View popupView = getLayoutInflater().inflate(R.layout.pop_up_layout, null);
         ImageView matchImageView = popupView.findViewById(R.id.match_image);
-        matchImageView.setImageResource(R.drawable.AdobeStock_513523396); // Replace with your actual image resource
+        matchImageView.setImageResource(R.drawable.matching); // Replace with your actual image resource
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(popupView);
         AlertDialog dialog = builder.create();

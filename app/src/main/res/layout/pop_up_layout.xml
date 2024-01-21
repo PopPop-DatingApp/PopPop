@@ -7,7 +7,8 @@
         android:id="@+id/match_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/AdobeStock_513523396"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/matching" />
 
 </RelativeLayout>
