@@ -56,7 +56,7 @@
             android:value="true" />
 
         <activity
-            android:name=".boardingpages.horoscopeBoarding"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,7 +68,7 @@
             android:name=".boardingpages.boardingGender"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".boardingpages.horoscopeBoarding"
             android:exported="false" />
         <activity
             android:name=".boardingpages.hobbyBoarding"
