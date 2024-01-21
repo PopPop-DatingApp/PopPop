@@ -46,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
                             if (user != null) {
                                 FirestoreUserUtils.checkIfUserExistsThenAdd(user).addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
-                                        Toast.makeText(RegisterActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(RegisterActivity.this, "Info saved successfully", Toast.LENGTH_SHORT).show();
                                         UserModel userModel = task1.getResult();
                                         if (userModel.getAge() == null){
                                             startActivity(new Intent(RegisterActivity.this, boardingName.class));
@@ -56,17 +56,17 @@ public class RegisterActivity extends AppCompatActivity {
                                         }
                                         FirestoreUserUtils.updateFCMTokenForUser(userModel)
                                                 .thenAccept(result -> {
-                                                    Toast.makeText(RegisterActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
+                                                    //Toast.makeText(RegisterActivity.this, "FCM Token saved successfully", Toast.LENGTH_SHORT).show();
                                                 })
                                                 .exceptionally(throwable -> {
                                                     Log.e("FCM token update", "Failed: " + throwable.getMessage());
-                                                    Toast.makeText(RegisterActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
+                                                    //Toast.makeText(RegisterActivity.this, "Fail to save FCM Token", Toast.LENGTH_SHORT).show();
                                                     return null;
                                                 });
                                     } else {
                                         Exception exception = task1.getException();
                                         Log.e("exception", exception.toString());
-                                        Toast.makeText(RegisterActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(RegisterActivity.this, "Fail to save", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
